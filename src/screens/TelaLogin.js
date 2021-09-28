@@ -1,9 +1,14 @@
 import React from "react";
-import { Button, View, Text } from "react-native";
+import { Button, View, Text, TextInput } from "react-native";
 
 
 export default class TelaLogin extends React.Component {
     
+    state = {
+        nome: '',
+        sobrenome: ''
+    }
+
     constructor(props) {
         super(props);
     }
@@ -12,14 +17,44 @@ export default class TelaLogin extends React.Component {
         return (
             <View>
 
-                <Text>Text 1</Text>
+                <Text
+                    style={{
+                        fontSize: 30,
+                    }}
+                >Nome</Text>
 
-                <Text>Text 2</Text>
+                <TextInput
+                    style={{
+                        fontSize: 30,
+                        borderWidth: 1,
+                    }}
+                    onChangeText={(nome) => this.setState({nome})}
+                />
+
+                <Text
+                    style={{
+                        fontSize: 30,
+                    }}
+                >Sobrenome</Text>
+
+                <TextInput
+                    style={{
+                        fontSize: 30,
+                        borderWidth: 1,
+                    }}
+                    onChangeText={(sobrenome) => this.setState({sobrenome})}
+                />
 
                 <Button
                     title='Login'
                     onPress={() =>
-                        this.props.navigation.navigate('TelaInicial', { name: 'Jane' })
+                        this.props.navigation.navigate(
+                            'TelaInicial',
+                            {
+                                nome: this.state.nome,
+                                sobrenome: this.state.sobrenome,
+                            }
+                        )
                     }
                 />
                 
@@ -27,4 +62,3 @@ export default class TelaLogin extends React.Component {
           );
     }
 }
-

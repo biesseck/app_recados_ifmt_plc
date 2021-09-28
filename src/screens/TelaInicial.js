@@ -12,9 +12,17 @@ export default class TelaInicial extends React.Component {
         return (
             <View>
                 
-                <Text>Text 3</Text>
+                <Text
+                    style={{
+                        fontSize: 30,
+                    }}
+                >Nome: {this.props.route.params.nome}</Text>
 
-                <Text>Text 4</Text>
+                <Text
+                    style={{
+                        fontSize: 30,
+                    }}
+                >Sobrenome: {this.props.route.params.sobrenome}</Text>
         
             </View>
         );
