@@ -19,7 +19,7 @@ export default function App() {
         <Stack.Screen
           name="TelaLogin"
           component={TelaLogin}
-          options={{ title: 'Tela de Login'}}
+          options={{ title: 'Título da Tela de Login'}}
         />
 
         <Stack.Screen
