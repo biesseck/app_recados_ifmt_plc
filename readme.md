@@ -6,3 +6,6 @@ expo install react-native-screens react-native-safe-area-context
 expo install expo-font
 
 npm install react-native-linear-gradient --save
+
+expo install expo-linear-gradient
+
