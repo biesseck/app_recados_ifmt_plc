@@ -4,3 +4,5 @@ npm install @react-navigation/native @react-navigation/native-stack
 expo install react-native-screens react-native-safe-area-context
 
 expo install expo-font
+
+npm install react-native-linear-gradient --save
