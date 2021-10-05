@@ -7,8 +7,18 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import TelaLogin from './src/screens/TelaLogin';
 import TelaInicial from './src/screens/TelaInicial';
 
+import Routes from './src/navigation';
+
 export default function App() {
 
+  return (
+
+    <Routes/>
+  
+  );
+
+
+  /*
   const Stack = createNativeStackNavigator();
 
   return (
@@ -32,6 +42,7 @@ export default function App() {
       
     </NavigationContainer>
   );
+  */
 }
 
 const styles = StyleSheet.create({
