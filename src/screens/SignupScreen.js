@@ -2,9 +2,9 @@ import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { useState } from 'react';
 import { StyleSheet, Text, View, Button as RNButton } from 'react-native';
-
 import { Button, InputField, ErrorMessage } from '../components';
 import Firebase from '../../config/firebase';
+import SocialButton from '../components/SocialButton';
 
 const auth = Firebase.auth();
 
@@ -85,6 +85,13 @@ export default function SignupScreen({ navigation }) {
         containerStyle={{
           marginBottom: 24
         }}
+      />
+      <SocialButton 
+        buttonTitle="Cadastrar com Google"
+        btnType="google"
+        color="#de4d41"
+        backgroundColor="#f5e7ea"
+        onPress={() => {}}
       />
       <RNButton
         onPress={() => navigation.navigate('Login')}
