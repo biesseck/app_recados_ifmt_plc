@@ -13,6 +13,7 @@ export default function LoginScreen({ navigation }) {
   const [passwordVisibility, setPasswordVisibility] = useState(true);
   const [rightIcon, setRightIcon] = useState('eye');
   const [loginError, setLoginError] = useState('');
+  const [usuario, setUsuario] = useState();
 
   const handlePasswordVisibility = () => {
     if (rightIcon === 'eye') {
@@ -95,6 +96,14 @@ export default function LoginScreen({ navigation }) {
       if (result.type === 'success') {
         onSignIn(result)
         return result.accessToken;
+
+        const {uid, displayname, photoURL} = result.user;
+        setUsuario({
+          id: uid,
+          avatar: photoURL,
+          name: displayname,
+        })
+
       } else {
         return { cancelled: true };
       }
@@ -102,9 +111,7 @@ export default function LoginScreen({ navigation }) {
       return { error: true };
     }
   }
-
-
-
+  
   return (
     <View style={styles.container}>
       <StatusBar style='dark-content' />
