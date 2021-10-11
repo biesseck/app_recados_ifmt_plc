@@ -1,23 +1,21 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useContext } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-
 import { IconButton } from '../components';
-import Firebase from '../../config/firebase';
+import {firebase, auth} from '../../config/firebase';
 import { AuthenticatedUserContext } from '../navigation/AuthenticatedUserProvider';
-
-const auth = Firebase.auth();
+import * as Google from 'expo-google-app-auth';
 
 export default function HomeScreen() {
   
-  const { user } = useContext(AuthenticatedUserContext);
+  const {user} = useContext(AuthenticatedUserContext);
   
   const handleSignOut = async () => {
-    try {
-      await auth.signOut();
-    } catch (error) {
-      console.log(error);
-    }
+    firebase.auth().signOut().then(() => {
+      // Sign-out successful.
+    }).catch((error) => {
+      // An error happened.
+    });
   };
   
   return (
