@@ -33,7 +33,6 @@ export default function HomeScreen() {
       </View>
 
       <Text style={styles.title}>E-mail: {user.email}</Text>
-        
       <Text style={styles.text}>User ID: {user.uid} </Text>
     </View>
   );
