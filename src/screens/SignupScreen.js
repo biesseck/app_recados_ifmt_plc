@@ -3,10 +3,8 @@ import React from 'react';
 import { useState } from 'react';
 import { StyleSheet, Text, View, Button as RNButton } from 'react-native';
 import { Button, InputField, ErrorMessage } from '../components';
-import Firebase from '../../config/firebase';
+import {firebase, auth} from '../../config/firebase';
 import SocialButton from '../components/SocialButton';
-
-const auth = Firebase.auth();
 
 export default function SignupScreen({ navigation }) {
   const [email, setEmail] = useState('');
@@ -34,6 +32,11 @@ export default function SignupScreen({ navigation }) {
       setSignupError(error.message);
     }
   };
+
+  const LoginGoogle = async () => {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    const result = await auth.signInWithPopup(provider);
+  }
 
   return (
     <View style={styles.container}>
@@ -91,7 +94,7 @@ export default function SignupScreen({ navigation }) {
         btnType="google"
         color="#de4d41"
         backgroundColor="#f5e7ea"
-        onPress={() => {}}
+        onPress={LoginGoogle}
       />
       <RNButton
         onPress={() => navigation.navigate('Login')}
