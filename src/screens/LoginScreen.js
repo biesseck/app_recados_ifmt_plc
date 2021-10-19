@@ -2,11 +2,10 @@ import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { useState } from 'react';
 import { StyleSheet, Text, View, Button as RNButton } from 'react-native';
-
 import { Button, InputField, ErrorMessage } from '../components';
-import Firebase from '../../config/firebase';
-
-const auth = Firebase.auth();
+import { firebase, auth } from '../../config/firebase';
+import SocialButton from '../components/SocialButton';
+import * as Google from 'expo-google-app-auth';
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
@@ -14,7 +13,7 @@ export default function LoginScreen({ navigation }) {
   const [passwordVisibility, setPasswordVisibility] = useState(true);
   const [rightIcon, setRightIcon] = useState('eye');
   const [loginError, setLoginError] = useState('');
-
+  
   const handlePasswordVisibility = () => {
     if (rightIcon === 'eye') {
       setRightIcon('eye-off');
@@ -35,6 +34,75 @@ export default function LoginScreen({ navigation }) {
     }
   };
 
+  // ESSE BLOCO SÓ FUNCIONA ONLINE (F)
+  //const LoginGoogle = async () => {
+  //  const provider = new firebase.auth.GoogleAuthProvider();
+  // const result = await auth.signInWithPopup(provider);
+  //}
+
+  function isUserEqual(googleUser, firebaseUser) {
+    if (firebaseUser) {
+      var providerData = firebaseUser.providerData;
+      for (var i = 0; i < providerData.length; i++) {
+        if (providerData[i].providerId === firebase.auth.GoogleAuthProvider.PROVIDER_ID &&
+          providerData[i].uid === googleUser.getBasicProfile().getId()) {
+          // We don't need to reauth the Firebase connection.
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+  // CONST NÃO FUNCIONOU TESTe COM FUNÇÕES
+  function onSignIn(googleUser) {
+    console.log('Google Auth Response', googleUser);
+    // We need to register an Observer on Firebase Auth to make sure auth is initialized.
+    var unsubscribe = firebase.auth().onAuthStateChanged((firebaseUser) => {
+      unsubscribe();
+      // Check if we are already signed-in Firebase with the correct user.
+      if (!isUserEqual(googleUser, firebaseUser)) {
+        // Build Firebase credential with the Google ID token.
+        var credential = firebase.auth.GoogleAuthProvider.credential(
+          googleUser.idToken,
+          googleUser.accessToken,
+        );
+
+        // Sign in with credential from the Google user.
+        firebase.auth().signInWithCredential(credential).catch((error) => {
+          // Handle Errors here.
+          var errorCode = error.code;
+          var errorMessage = error.message;
+          // The email of the user's account used.
+          var email = error.email;
+          // The firebase.auth.AuthCredential type that was used.
+          var credential = error.credential;
+          // ...
+        });
+      } else {
+        console.log('User already signed-in Firebase.');
+      }
+    });
+  }
+
+  const signInWithGoogleAsync = async () => {
+    try {
+      const result = await Google.logInAsync({
+        androidClientId: '512511721451-t98qi7pceqkjdeqoakcbj7bgl8e9qj3b.apps.googleusercontent.com',
+        //iosClientId: YOUR_CLIENT_ID_HERE,
+        scopes: ['profile', 'email'],
+      });
+
+      if (result.type === 'success') {
+        onSignIn(result)
+        return result.accessToken;
+      } else {
+        return { cancelled: true };
+      }
+    } catch (e) {
+      return { error: true };
+    }
+  }
+  
   return (
     <View style={styles.container}>
       <StatusBar style='dark-content' />
@@ -85,6 +153,13 @@ export default function LoginScreen({ navigation }) {
         containerStyle={{
           marginBottom: 24
         }}
+      />
+      <SocialButton
+        buttonTitle="Entrar com Google"
+        btnType="google"
+        color="#de4d41"
+        backgroundColor="#f5e7ea"
+        onPress={signInWithGoogleAsync}
       />
       <RNButton
         onPress={() => navigation.navigate('Signup')}
