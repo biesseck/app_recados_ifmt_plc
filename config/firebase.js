@@ -2,20 +2,17 @@ import firebase from 'firebase/app';
 import 'firebase/auth';
 import Constants from 'expo-constants';
 
-// Initialize Firebase
 const firebaseConfig = {
-  apiKey: Constants.manifest.extra.apiKey,
-  authDomain: Constants.manifest.extra.authDomain,
-  projectId: Constants.manifest.extra.projectId,
-  storageBucket: Constants.manifest.extra.storageBucket,
-  messagingSenderId: Constants.manifest.extra.messagingSenderId,
-  appId: Constants.manifest.extra.appId
+  apiKey: "AIzaSyDYIesmw4FstEKJzwIHmMcY-tKGiLe-qcw",
+  authDomain: "teste-app-recados-ifmt.firebaseapp.com",
+  databaseURL: "https://teste-app-recados-ifmt-default-rtdb.firebaseio.com",
+  projectId: "teste-app-recados-ifmt",
+  storageBucket: "teste-app-recados-ifmt.appspot.com",
+  messagingSenderId: "512511721451",
+  appId: "1:512511721451:web:5ec7ca36fde597f1ec63ae"
 };
 
-let Firebase;
+const app = firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
 
-if (firebase.apps.length === 0) {
-  Firebase = firebase.initializeApp(firebaseConfig);
-}
-
-export default Firebase;
+export { firebase, auth, app };
