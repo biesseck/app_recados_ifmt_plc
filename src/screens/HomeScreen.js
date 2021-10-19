@@ -1,14 +1,10 @@
-import { StatusBar } from 'expo-status-bar';
 import React, { useContext } from 'react';
 import { StyleSheet, Text, View, FlatList } from 'react-native';
 import { IconButton } from '../components';
-import Firebase from '../../config/firebase';
+import { firebase, auth } from '../../config/firebase';
 import { AuthenticatedUserContext } from '../navigation/AuthenticatedUserProvider';
 import Card from "../components/card";
 import data from "../../assets/data.json"
-
-
-const auth = Firebase.auth();
 
 export default function HomeScreen() {
   
