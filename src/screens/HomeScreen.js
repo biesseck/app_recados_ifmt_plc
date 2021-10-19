@@ -57,16 +57,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 24
+    marginBottom: 24,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: '#fff'
-  },
-  text: {
-    fontSize: 16,
-    fontWeight: 'normal',
-    color: '#fff'
-  }
+  flatlist_container: {
+		width: '100%',
+		height: '100%',
+	}
 });
