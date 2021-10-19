@@ -1,10 +1,12 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useContext } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-
+import { StyleSheet, Text, View, FlatList } from 'react-native';
 import { IconButton } from '../components';
 import Firebase from '../../config/firebase';
 import { AuthenticatedUserContext } from '../navigation/AuthenticatedUserProvider';
+import Card from "../components/card";
+import data from "../../assets/data.json"
+
 
 const auth = Firebase.auth();
 
@@ -21,11 +23,8 @@ export default function HomeScreen() {
   };
   
   return (
-    <View style={styles.container}>
-      <StatusBar style='dark-content' />
-        
+		<View style = {styles.container}>
       <View style={styles.row}>
-        <Text style={styles.title}>Usuário logado!</Text>
         <IconButton
           name='logout'
           size={24}
@@ -33,12 +32,22 @@ export default function HomeScreen() {
           onPress={handleSignOut}
         />
       </View>
-
-      <Text style={styles.title}>E-mail: {user.email}</Text>
-        
-      <Text style={styles.text}>User ID: {user.uid} </Text>
-    </View>
-  );
+			<View style = {styles.flatlist_container}>
+				<FlatList
+					data = {data.database}
+					renderItem = {({item}) => (
+						<Card
+							texto = {item.texto}
+							titulo = {item.titulo}
+							data = {item.data}
+							info1 = {item.info1}
+							info2 = {item.info2}
+						/>
+					)}
+				/>
+			</View>
+		</View>
+	);
 }
 
 const styles = StyleSheet.create({
