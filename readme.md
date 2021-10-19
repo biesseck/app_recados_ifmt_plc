@@ -14,5 +14,7 @@
 
   ```expo install expo-linear-gradient```
 
+  ```expo install expo-google-app-auth```
+
   # CONSULTA
   [Integrate Firebase Authentication With an Expo App](https://blog.jscrambler.com/how-to-integrate-firebase-authentication-with-an-expo-app)
