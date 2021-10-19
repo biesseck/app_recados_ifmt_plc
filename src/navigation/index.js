@@ -1,5 +1,4 @@
 import React from 'react';
-
 import { AuthenticatedUserProvider } from './AuthenticatedUserProvider';
 import RootNavigator from './RootNavigator';
 
