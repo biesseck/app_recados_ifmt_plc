@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { StyleSheet, Text, View, FlatList, Alert } from 'react-native';
-import { IconButton } from '../components';
+import { Button, IconButton } from '../components';
 import { firebase, auth } from '../../config/firebase';
 import { AuthenticatedUserContext } from '../navigation/AuthenticatedUserProvider';
 import Card from "../components/card";
@@ -55,10 +55,9 @@ export default function HomeScreen() {
   }, []);
   
 
-  
   return (
 		<View style = {styles.container}>
-      <View style={styles.row}>
+      <View style = {styles.row}>
         <IconButton
           name='logout'
           size={24}
@@ -69,31 +68,51 @@ export default function HomeScreen() {
 
 			<View style = {styles.flatlist_container}>
 
-      <FlatList
-					data = {recados}
-					renderItem = {({item}) => (
-						<Card
-							texto = {item.texto}
-							titulo = {item.titulo}
-							data = {item.data}
-							info1 = {item.info1}
-							info2 = {item.info2}
-						/>
-					)}
-				/>
+      { recados.length == 0   // Se nao houver mensagens, exibe uma mensagem ao usuario
+        ? <View style = {{alignItems: 'center'}}>
+            <Text style = {{fontSize: 20, color: '#FFF'}}>Nenhuma mensagem</Text>
+            <Text></Text>
+            <Button
+              onPress={() => {getRecados();}}
+              backgroundColor='#f57c00'
+              title='Recarregar'
+              tileColor='#fff'
+              titleSize={20}
+              containerStyle={{
+                marginBottom: 20
+              }}
+            />
+          </View>
 
-        {/* <FlatList
-					data = {data.database}
-					renderItem = {({item}) => (
-						<Card
-							texto = {item.texto}
-							titulo = {item.titulo}
-							data = {item.data}
-							info1 = {item.info1}
-							info2 = {item.info2}
-						/>
-					)}
-				/> */}
+        : <FlatList   // Caso hajam mensagens baixadas, exibe-as em forma de lista
+            data = {recados}
+            renderItem = {({item}) => (
+              <Card
+                texto = {item.texto}
+                titulo = {item.titulo}
+                data = {item.data}
+                info1 = {item.info1}
+                info2 = {item.info2}
+              />
+            )}
+          />
+
+        /*
+        <FlatList
+          data = {data.database}
+          renderItem = {({item}) => (
+            <Card
+              texto = {item.texto}
+              titulo = {item.titulo}
+              data = {item.data}
+              info1 = {item.info1}
+              info2 = {item.info2}
+            />
+          )}
+        />
+        */
+      }
+
 			</View>
 		</View>
 	);
