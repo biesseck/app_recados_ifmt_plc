@@ -1,17 +1,22 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { StyleSheet, Text, View, FlatList, Alert } from 'react-native';
+import { StyleSheet, Text, View, FlatList, Alert, Pressable, Image, ImageBackground, Dimensions } from 'react-native';
+import { TextInput } from 'react-native-gesture-handler';
 import { Button, IconButton } from '../components';
 import { firebase, auth } from '../../config/firebase';
 import { AuthenticatedUserContext } from '../navigation/AuthenticatedUserProvider';
 import Card from "../components/card";
-import data from "../../assets/data.json"
+import Constants from 'expo-constants';
+import Header from '../components/homeScreenHeader.js';
+const { height } = Dimensions.get('window');
+
+const user_curso = 'Informática'
+const user_turno = 'Matutino'
+const user_ano = '2'
 
 export default function HomeScreen() {
-  
   const { user } = useContext(AuthenticatedUserContext);
   const [loading, setLoading] = useState(true);
   const [recados, setRecados] = useState([]); 
-
 
   const handleSignOut = async () => {
     try {
@@ -21,53 +26,53 @@ export default function HomeScreen() {
     }
   };
 
-
   const getRecados = async () => {
     try {
-      const recadosRecebidos = firebase
-      .firestore()
-      .collection('recados')
-      .onSnapshot((snapshot) => {
-        const recadosList = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          titulo: doc.data().titulo,
-          data: doc.data().data,
-          info1: doc.data().info1,
-          info2: doc.data().info2,
-          texto: doc.data().texto
-        }));
-        setRecados(recadosList);
-      }, () => {
-        setError(true)
-      });
-      setLoading(false);
-      // return() => recadosRecebidos();
-      
+
+      const recadosRef = firebase.firestore().collection('recados');
+      const snapshot = await recadosRef.orderBy('timestamp', 'desc').get()
+      const recadosList = new Array()
+
+      // Filtragem dos recados por curso, ano e turma;
+      snapshot.forEach(doc => {
+        if(  (doc.data().curso_dest == user_curso 
+          || doc.data().curso_dest == '')
+          && (doc.data().ano_dest == user_ano
+          || doc.data().ano_dest == '')
+          && (doc.data().turno_dest == user_turno
+          || doc.data().turno_dest == ''))
+          recadosList.push(doc)
+      })
+
+      setRecados(recadosList.map((doc) => ({
+        id: doc.id,
+        titulo: doc.data().titulo,
+        timestamp: doc.data().timestamp,
+        remetente: doc.data().remetente,
+        curso_dest: doc.data().curso_dest,
+        ano_dest: doc.data().ano_dest,
+        turno_dest: doc.data().turno_dest,
+        texto: doc.data().texto
+      })))
+      setLoading(false)
+
     } catch (err) {
       Alert.alert("Erro ao consultar os recados!!!", err.message);
     }
   };
-
 
   // Funcao executada quando a tela e' carregada
   useEffect(() => {
     getRecados()
   }, []);
   
-
   return (
-		<View style = {styles.container}>
-      <View style = {styles.row}>
-        <IconButton
-          name='logout'
-          size={24}
-          color='#fff'
-          onPress={handleSignOut}
-        />
-      </View>
-
+		<ImageBackground 
+      style = {styles.container}
+      source = {require('../../assets/background_homeScreen.png')}  
+    >
+      <Header/>
 			<View style = {styles.flatlist_container}>
-
       { recados.length == 0   // Se nao houver mensagens, exibe uma mensagem ao usuario
         ? <View style = {{alignItems: 'center'}}>
             <Text style = {{fontSize: 20, color: '#FFF'}}>Nenhuma mensagem</Text>
@@ -83,47 +88,33 @@ export default function HomeScreen() {
               }}
             />
           </View>
-
         : <FlatList   // Caso hajam mensagens baixadas, exibe-as em forma de lista
             data = {recados}
             renderItem = {({item}) => (
               <Card
                 texto = {item.texto}
                 titulo = {item.titulo}
-                data = {item.data}
-                info1 = {item.info1}
-                info2 = {item.info2}
+                timestamp = {item.timestamp}
+                info1 = {item.remetente}
+                info2 = {'ao ' +
+                        item.ano_dest + 'º ' 
+                        + item.curso_dest + ' ' 
+                        + item.turno_dest}
               />
             )}
           />
-
-        /*
-        <FlatList
-          data = {data.database}
-          renderItem = {({item}) => (
-            <Card
-              texto = {item.texto}
-              titulo = {item.titulo}
-              data = {item.data}
-              info1 = {item.info1}
-              info2 = {item.info2}
-            />
-          )}
-        />
-        */
       }
-
 			</View>
-		</View>
+		</ImageBackground>
 	);
 }
+
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#53b55b',
-    paddingTop: 50,
-    paddingHorizontal: 12
+    backgroundColor: '#ddd',
+    height: height + 100,
   },
   row: {
     flexDirection: 'row',
@@ -134,5 +125,6 @@ const styles = StyleSheet.create({
   flatlist_container: {
 		width: '100%',
 		height: '100%',
-	}
+    paddingHorizontal: 12,
+	},
 });

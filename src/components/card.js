@@ -30,6 +30,13 @@ componentDidMount() {
 
 render(){
 
+	const dataString = this.props.timestamp.toDate()
+	const data = 
+		dataString.getDate() + '/'
+		+ dataString.getMonth() + '/'
+		+ dataString.getFullYear();
+	const horario = dataString.toTimeString().substr(0,5)
+
 	if(!this.state.fontsLoaded) return null; 
 
 	// Imprimindo o texto pela primeira vez e achando o tamanho dele.
@@ -38,7 +45,7 @@ render(){
 		<View style = {styles.card_container} >
 			<View style = {{flexDirection: 'row'}} >
 				<Text style = {styles.card_titulo} >{this.props.titulo}</Text>
-				<Text style = {styles.card_data} >{this.props.data}</Text>
+				<Text style = {styles.card_data} >{data + horario}</Text>
 			</View>
 			<View style = {styles.card_line} />
 			<Text 
@@ -55,7 +62,7 @@ render(){
 			activeOpacity = {0.95}
 			onPress = {() => this.setState({ modalVisible: true })}
 		>
-			<Text style = {styles.card_titulo} >{this.props.titulo} <Text style = {styles.card_data} >{this.props.data}</Text></Text>
+			<Text style = {styles.card_titulo} >{this.props.titulo} <Text style = {styles.card_data} >{data}</Text></Text>
 			{/* Ficou meio confuso esse Text do Título, mas se jogar o da data pra baixo ele renderiza diferente e fica feio */}
 			<View style = {styles.card_line} />
 			<Text style = {[styles.card_text, {maxHeight: (13 * 9) }]} >{this.props.texto}</Text>
@@ -79,7 +86,7 @@ render(){
                     <View style = {{width: '95%', height: '98%'}}>
                         <Text style = {[styles.card_titulo, {fontSize: 24}]}>{this.props.titulo}</Text>
                         <Text style = {styles.card_overlay_data} >
-                            <Text style = {{color: '#CD191E'}} >{this.props.info1}</Text> - {this.props.data}
+                            <Text style = {{color: '#CD191E'}} >{this.props.info1}</Text> - {data + ' ' + horario}
                         </Text>
                         <Text style = {[styles.card_overlay_data, {textAlign: 'justify'}]} >{this.props.info2}</Text>
                         <View style = {styles.card_line} />
@@ -101,7 +108,7 @@ render(){
 			activeOpacity = {0.95}
 			onPress = {() => this.setState({ modalVisible: true })}
 		>
-			<Text style = {styles.card_titulo} >{this.props.titulo} <Text style = {styles.card_data} >{this.props.data}</Text></Text>
+			<Text style = {styles.card_titulo} >{this.props.titulo} <Text style = {styles.card_data} >{data}</Text></Text>
 			{/* Ficou meio confuso esse Text do Título, mas se jogar o da data pra baixo ele renderiza diferente e fica feio */}
 			<View style = {styles.card_line} />
 			<Text style = {[styles.card_text, {maxHeight: (13 * 9) }]} >{this.props.texto}</Text>
@@ -126,7 +133,7 @@ render(){
                     <View style = {{width: '95%', height: '98%'}}>
                         <Text style = {[styles.card_titulo, {fontSize: 24}]}>{this.props.titulo}</Text>
                         <Text style = {styles.card_overlay_data} >
-                            <Text style = {{color: '#CD191E'}} >{this.props.info1}</Text> - {this.props.data}
+                            <Text style = {{color: '#CD191E'}} >{this.props.info1}</Text> - {data + ' ' + horario}
                         </Text>
                         <Text style = {[styles.card_overlay_data, {textAlign: 'justify'}]} >{this.props.info2}</Text>
                         <View style = {styles.card_line} />
