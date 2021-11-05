@@ -4,9 +4,9 @@ import { TextInput } from 'react-native-gesture-handler';
 import { Button, IconButton } from '../components';
 import { firebase, auth } from '../../config/firebase';
 import { AuthenticatedUserContext } from '../navigation/AuthenticatedUserProvider';
+import filter from 'lodash.filter'
 import Card from "../components/card";
 import Constants from 'expo-constants';
-import Header from '../components/homeScreenHeader.js';
 const { height } = Dimensions.get('window');
 
 const user_curso = 'Informática'
@@ -17,6 +17,8 @@ export default function HomeScreen() {
   const { user } = useContext(AuthenticatedUserContext);
   const [loading, setLoading] = useState(true);
   const [recados, setRecados] = useState([]); 
+  const [pesquisa, setPesquisa] = useState('')
+  const [fullData, setFullData] = useState([])
 
   const handleSignOut = async () => {
     try {
@@ -44,7 +46,7 @@ export default function HomeScreen() {
           recadosList.push(doc)
       })
 
-      setRecados(recadosList.map((doc) => ({
+      setFullData(recadosList.map((doc) => ({
         id: doc.id,
         titulo: doc.data().titulo,
         timestamp: doc.data().timestamp,
@@ -54,12 +56,36 @@ export default function HomeScreen() {
         turno_dest: doc.data().turno_dest,
         texto: doc.data().texto
       })))
+      setRecados(fullData)
+      setPesquisa('')
       setLoading(false)
 
     } catch (err) {
       Alert.alert("Erro ao consultar os recados!!!", err.message);
     }
   };
+
+  const contem = (doc,query) => {
+    let i = false;
+    Object.values(doc).forEach(value => {
+      if(i) return true
+      if (typeof value === 'string' || value instanceof String){
+        i = value.match(query)
+      } else {
+        //console.log(value.toDateString())
+      }
+    })
+    return i;
+  }
+
+  const handleSearch = (text) => {
+    let regexQuery = new RegExp(text, 'i')
+    const data = filter(fullData, doc => {
+      return contem(doc,regexQuery)
+    })
+    setPesquisa(text)
+    setRecados(data)
+  }
 
   // Funcao executada quando a tela e' carregada
   useEffect(() => {
@@ -71,7 +97,35 @@ export default function HomeScreen() {
       style = {styles.container}
       source = {require('../../assets/background_homeScreen.png')}  
     >
-      <Header/>
+      <View style = {styles.header_container}>
+        <View style = {{flexDirection: 'row', justifyContent: 'center', height: '35%', alignItems: 'center'}}>
+          <Image
+            style = {styles.logo}
+            source = {require('../../assets/iflogo_white_40x53.png')}
+          />
+          <View style = {styles.searchBar}>
+            <Image
+              style = {styles.searchIcon}
+              source = {require('../../assets/searchIcon.png')}
+            />
+            <TextInput style = {styles.searchBar_input} 
+              onChangeText = {handleSearch}
+              value = {pesquisa}
+              placeholder = 'Pesquisar'
+            />
+            <Pressable
+              onPress = {() => handleSearch('')}
+              style = {{paddingVertical: 10 // Deixa o botão mais fácil de apertar 
+              }}
+            >
+              <Image
+                style = {{marginRight: 5}}
+                source = {require('../../assets/crossIcon.png')}
+              />
+            </Pressable>
+          </View>
+        </View>
+      </View>
 			<View style = {styles.flatlist_container}>
       { recados.length == 0   // Se nao houver mensagens, exibe uma mensagem ao usuario
         ? <View style = {{alignItems: 'center'}}>
@@ -127,4 +181,42 @@ const styles = StyleSheet.create({
 		height: '100%',
     paddingHorizontal: 12,
 	},
+  header_container: {
+  	width: '100%',
+		height: Constants.statusBarHeight + 40,
+		backgroundColor: '#2F9E41',
+		justifyContent: 'flex-end',
+		paddingBottom: 10,
+		shadowColor: "#000",
+		shadowOffset: {
+			width: 0,
+			height: 3,
+		},
+		shadowOpacity: 0.27,
+		shadowRadius: 4.65,
+		elevation: 6,
+  },
+	searchBar: {
+		width: '85%',
+		height: '100%',
+		borderRadius: 5,
+		backgroundColor: '#4ABD5E',
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'space-between',
+		paddingLeft: 2,
+	},
+	logo: {
+		height: 25,
+		resizeMode: 'contain',
+		marginRight: 5,
+	},
+	searchIcon: {
+		height: 15,
+		resizeMode: 'contain',
+	},
+	searchBar_input: {
+		height: '200%', // 100% o texto sai cortado.
+		width: '85%',
+	}
 });
