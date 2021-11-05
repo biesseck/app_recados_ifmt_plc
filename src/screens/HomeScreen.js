@@ -56,9 +56,9 @@ export default function HomeScreen() {
         turno_dest: doc.data().turno_dest,
         texto: doc.data().texto
       })))
-      setRecados(fullData)
       setPesquisa('')
       setLoading(false)
+      setRecados(fullData)
 
     } catch (err) {
       Alert.alert("Erro ao consultar os recados!!!", err.message);
@@ -68,20 +68,30 @@ export default function HomeScreen() {
   const contem = (doc,query) => {
     let i = false;
     Object.values(doc).forEach(value => {
-      if(i) return true
-      if (typeof value === 'string' || value instanceof String){
-        i = value.match(query)
+      if (i) return true
+      if (doc.id == value){
+        return;
+      } else if (typeof value === 'string' || value instanceof String){
+        i = value.toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .includes(query)
       } else {
-        //console.log(value.toDateString())
+        i = (value.toDate().getDate() + '/'
+            + value.toDate().getMonth() + '/'
+            + value.toDate().getFullYear())
+            .includes(query)
       }
     })
     return i;
   }
 
   const handleSearch = (text) => {
-    let regexQuery = new RegExp(text, 'i')
+    let normalQuery = text.toLowerCase()
+                      .normalize("NFD")
+                      .replace(/[\u0300-\u036f]/g, "")
     const data = filter(fullData, doc => {
-      return contem(doc,regexQuery)
+      return contem(doc,normalQuery)
     })
     setPesquisa(text)
     setRecados(data)
@@ -180,6 +190,7 @@ const styles = StyleSheet.create({
 		width: '100%',
 		height: '100%',
     paddingHorizontal: 12,
+    flex: 1,
 	},
   header_container: {
   	width: '100%',
