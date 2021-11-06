@@ -9,16 +9,17 @@ import Card from "../components/card";
 import Constants from 'expo-constants';
 const { height } = Dimensions.get('window');
 
-const user_curso = 'Informática'
-const user_turno = 'Matutino'
-const user_ano = '2'
-
 export default function HomeScreen() {
+
   const { user } = useContext(AuthenticatedUserContext);
   const [loading, setLoading] = useState(true);
+<<<<<<< HEAD
   const [recados, setRecados] = useState([]); 
   const [pesquisa, setPesquisa] = useState('')
   const [fullData, setFullData] = useState([])
+=======
+  const [recados, setRecados] = useState([]);
+>>>>>>> master
 
   const handleSignOut = async () => {
     try {
@@ -31,18 +32,29 @@ export default function HomeScreen() {
   const getRecados = async () => {
     try {
 
+      var user_ano;
+      var user_curso;
+      var user_turno;
+
+      firebase.firestore().collection('users').doc(user.uid).get()
+        .then(doc => {
+          user_ano = doc.data().ano
+          user_curso = doc.data().curso
+          user_turno = doc.data().turno
+        })
+
       const recadosRef = firebase.firestore().collection('recados');
       const snapshot = await recadosRef.orderBy('timestamp', 'desc').get()
       const recadosList = new Array()
 
       // Filtragem dos recados por curso, ano e turma;
       snapshot.forEach(doc => {
-        if(  (doc.data().curso_dest == user_curso 
+        if ((doc.data().curso_dest == user_curso
           || doc.data().curso_dest == '')
           && (doc.data().ano_dest == user_ano
-          || doc.data().ano_dest == '')
+            || doc.data().ano_dest == '')
           && (doc.data().turno_dest == user_turno
-          || doc.data().turno_dest == ''))
+            || doc.data().turno_dest == ''))
           recadosList.push(doc)
       })
 
@@ -101,12 +113,13 @@ export default function HomeScreen() {
   useEffect(() => {
     getRecados()
   }, []);
-  
+
   return (
-		<ImageBackground 
-      style = {styles.container}
-      source = {require('../../assets/background_homeScreen.png')}  
+    <ImageBackground
+      style={styles.container}
+      source={require('../../assets/background_homeScreen.png')}
     >
+<<<<<<< HEAD
       <View style = {styles.header_container}>
         <View style = {{flexDirection: 'row', justifyContent: 'center', height: '35%', alignItems: 'center'}}>
           <Image
@@ -140,9 +153,19 @@ export default function HomeScreen() {
       { recados.length == 0   // Se nao houver mensagens, exibe uma mensagem ao usuario
         ? <View style = {{alignItems: 'center'}}>
             <Text style = {{fontSize: 20, color: '#FFF'}}>Nenhuma mensagem</Text>
+=======
+      <Button
+        onPress={handleSignOut}
+      />
+      <Header />
+      <View style={styles.flatlist_container}>
+        {recados.length == 0   // Se nao houver mensagens, exibe uma mensagem ao usuario
+          ? <View style={{ alignItems: 'center' }}>
+            <Text style={{ fontSize: 20, color: '#FFF' }}>Nenhuma mensagem</Text>
+>>>>>>> master
             <Text></Text>
             <Button
-              onPress={() => {getRecados();}}
+              onPress={() => { getRecados(); }}
               backgroundColor='#f57c00'
               title='Recarregar'
               tileColor='#fff'
@@ -152,27 +175,26 @@ export default function HomeScreen() {
               }}
             />
           </View>
-        : <FlatList   // Caso hajam mensagens baixadas, exibe-as em forma de lista
-            data = {recados}
-            renderItem = {({item}) => (
+          : <FlatList   // Caso hajam mensagens baixadas, exibe-as em forma de lista
+            data={recados}
+            renderItem={({ item }) => (
               <Card
-                texto = {item.texto}
-                titulo = {item.titulo}
-                timestamp = {item.timestamp}
-                info1 = {item.remetente}
-                info2 = {'ao ' +
-                        item.ano_dest + 'º ' 
-                        + item.curso_dest + ' ' 
-                        + item.turno_dest}
+                texto={item.texto}
+                titulo={item.titulo}
+                timestamp={item.timestamp}
+                info1={item.remetente}
+                info2={'ao ' +
+                  item.ano_dest + 'º '
+                  + item.curso_dest + ' '
+                  + item.turno_dest}
               />
             )}
           />
-      }
-			</View>
-		</ImageBackground>
-	);
+        }
+      </View>
+    </ImageBackground>
+  );
 }
-
 
 const styles = StyleSheet.create({
   container: {
@@ -187,9 +209,10 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   flatlist_container: {
-		width: '100%',
-		height: '100%',
+    width: '100%',
+    height: '100%',
     paddingHorizontal: 12,
+<<<<<<< HEAD
     flex: 1,
 	},
   header_container: {
@@ -230,4 +253,7 @@ const styles = StyleSheet.create({
 		height: '200%', // 100% o texto sai cortado.
 		width: '85%',
 	}
+=======
+  },
+>>>>>>> master
 });
