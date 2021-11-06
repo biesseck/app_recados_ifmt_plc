@@ -13,13 +13,9 @@ export default function HomeScreen() {
 
   const { user } = useContext(AuthenticatedUserContext);
   const [loading, setLoading] = useState(true);
-<<<<<<< HEAD
   const [recados, setRecados] = useState([]); 
   const [pesquisa, setPesquisa] = useState('')
   const [fullData, setFullData] = useState([])
-=======
-  const [recados, setRecados] = useState([]);
->>>>>>> master
 
   const handleSignOut = async () => {
     try {
@@ -119,7 +115,6 @@ export default function HomeScreen() {
       style={styles.container}
       source={require('../../assets/background_homeScreen.png')}
     >
-<<<<<<< HEAD
       <View style = {styles.header_container}>
         <View style = {{flexDirection: 'row', justifyContent: 'center', height: '35%', alignItems: 'center'}}>
           <Image
@@ -153,16 +148,6 @@ export default function HomeScreen() {
       { recados.length == 0   // Se nao houver mensagens, exibe uma mensagem ao usuario
         ? <View style = {{alignItems: 'center'}}>
             <Text style = {{fontSize: 20, color: '#FFF'}}>Nenhuma mensagem</Text>
-=======
-      <Button
-        onPress={handleSignOut}
-      />
-      <Header />
-      <View style={styles.flatlist_container}>
-        {recados.length == 0   // Se nao houver mensagens, exibe uma mensagem ao usuario
-          ? <View style={{ alignItems: 'center' }}>
-            <Text style={{ fontSize: 20, color: '#FFF' }}>Nenhuma mensagem</Text>
->>>>>>> master
             <Text></Text>
             <Button
               onPress={() => { getRecados(); }}
@@ -212,7 +197,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     paddingHorizontal: 12,
-<<<<<<< HEAD
     flex: 1,
 	},
   header_container: {
@@ -253,7 +237,4 @@ const styles = StyleSheet.create({
 		height: '200%', // 100% o texto sai cortado.
 		width: '85%',
 	}
-=======
-  },
->>>>>>> master
 });
