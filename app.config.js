@@ -8,9 +8,9 @@ export default {
     orientation: "portrait",
     icon: "./assets/icon.png",
     splash: {
-      image: "./assets/splash.png",
+      image: "./assets/splash_ifLogo.png",
       resizeMode: "contain",
-      backgroundColor: "#ffffff"
+      backgroundColor: "#2F9E41"
     },
     updates: {
       fallbackToCacheTimeout: 0

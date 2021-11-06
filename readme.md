@@ -18,5 +18,7 @@
   
   ```npm install react-native-dropdown-picker```
 
+  ```npm install lodash.filter```
+
   # CONSULTA
   [Integrate Firebase Authentication With an Expo App](https://blog.jscrambler.com/how-to-integrate-firebase-authentication-with-an-expo-app)
