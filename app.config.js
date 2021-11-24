@@ -25,7 +25,8 @@ export default {
       adaptiveIcon: {
         foregroundImage: "./assets/adaptive-icon.png",
         backgroundColor: "#FFFFFF"
-      }
+      },
+      package: "com.bernardo.biesseck.app_recados_ifmt_plc",
     },
     web: {
       favicon: "./assets/favicon.png"
@@ -38,5 +39,6 @@ export default {
       messagingSenderId: "512511721451",
       appId: "1:512511721451:web:5ec7ca36fde597f1ec63ae"
     }
-  }
+  }, 
+  
 }
