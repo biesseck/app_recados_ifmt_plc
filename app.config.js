@@ -27,6 +27,9 @@ export default {
         backgroundColor: "#FFFFFF"
       }
     },
+    androidNavigationBar: {
+     backgroundColor: '#000000' // Pensei em colocar o verde do IF mas fica muito chamativo
+   },
     web: {
       favicon: "./assets/favicon.png"
     },

@@ -1,21 +1,27 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { StyleSheet, Text, View, FlatList, Alert, Pressable, Image, ImageBackground, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, FlatList, Alert, Pressable, Image, ImageBackground, Dimensions, StatusBar, TouchableOpacity } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
-import { Button, IconButton } from '../components';
+import { Button } from '../components';
 import { firebase, auth } from '../../config/firebase';
 import { AuthenticatedUserContext } from '../navigation/AuthenticatedUserProvider';
 import filter from 'lodash.filter'
 import Card from "../components/card";
 import Constants from 'expo-constants';
+import { NavigationContainer } from '@react-navigation/native';
+import { isUndefined } from 'lodash';
 const { height } = Dimensions.get('window');
+var user_setor = [];
 
-export default function HomeScreen() {
+
+export default function HomeScreen({ navigation }) {
 
   const { user } = useContext(AuthenticatedUserContext);
   const [loading, setLoading] = useState(true);
   const [recados, setRecados] = useState([]); 
   const [pesquisa, setPesquisa] = useState('')
   const [fullData, setFullData] = useState([])
+
+  
 
   const handleSignOut = async () => {
     try {
@@ -37,6 +43,7 @@ export default function HomeScreen() {
           user_ano = doc.data().ano
           user_curso = doc.data().curso
           user_turno = doc.data().turno
+          user_setor = doc.data().setor
         })
 
       const recadosRef = firebase.firestore().collection('recados');
@@ -53,6 +60,8 @@ export default function HomeScreen() {
             || doc.data().turno_dest == ''))
           recadosList.push(doc)
       })
+
+      
 
       setFullData(recadosList.map((doc) => ({
         id: doc.id,
@@ -110,6 +119,8 @@ export default function HomeScreen() {
     getRecados()
   }, []);
 
+  var tst = []
+
   return (
     <ImageBackground
       style={styles.container}
@@ -117,10 +128,14 @@ export default function HomeScreen() {
     >
       <View style = {styles.header_container}>
         <View style = {{flexDirection: 'row', justifyContent: 'center', height: '35%', alignItems: 'center'}}>
-          <Image
-            style = {styles.logo}
-            source = {require('../../assets/iflogo_white_40x53.png')}
-          />
+          <Pressable
+            onPress = {() => handleSignOut()}
+          >
+            <Image
+              style = {styles.logo}
+              source = {require('../../assets/iflogo_white_40x53.png')}
+            />
+          </Pressable>
           <View style = {styles.searchBar}>
             <Image
               style = {styles.searchIcon}
@@ -177,6 +192,30 @@ export default function HomeScreen() {
           />
         }
       </View>
+      { user_setor.length != 0 // Só mostra o botão de enviar mensagem se o usuário tiver um setor.
+      ? <View /* Eu não sei porque mas quando eu coloco o TouchableOpacity aqui o estilo fica meio estranho,
+               Então eu tive que criar uma view e colocar o TouchableOpacity dentro dela                  */
+        style = {{
+          marginBottom: 20,
+          marginRight: 20,
+          width: '50%',
+          height: '10%',
+          backgroundColor: '#ddd'
+        }}
+      >
+        <TouchableOpacity
+          style = {{
+            width: '100%',
+            height: '100%',
+            borderWidth: 1,
+          }}
+          onPress = {() => {navigation.navigate('NewCard')}}
+        >
+
+        </TouchableOpacity>
+
+      </View>
+      : <View></View> }
     </ImageBackground>
   );
 }
@@ -185,7 +224,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ddd',
-    height: height + 100,
+    height: height + 500,
+    alignItems: 'flex-end',
   },
   row: {
     flexDirection: 'row',
@@ -216,7 +256,7 @@ const styles = StyleSheet.create({
   },
 	searchBar: {
 		width: '85%',
-		height: '100%',
+		height: 25,
 		borderRadius: 5,
 		backgroundColor: '#4ABD5E',
 		flexDirection: 'row',
