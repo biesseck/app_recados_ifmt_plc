@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useContext, useEffect, useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { firebase, auth } from '../../config/firebase';
 import { AuthenticatedUserContext } from '../navigation/AuthenticatedUserProvider';
@@ -59,16 +59,20 @@ export default function NewCard() {
   }
 
   const sendCard = () => {
-    firebase.firestore().collection('recados').add({
-      ano_dest: ano,
-      curso_dest: curso,
-      turno_dest: turno,
-      remetente: setor,
-      texto: content,
-      titulo: titulo,
-      timestamp: firebase.firestore.Timestamp.fromDate(new Date()),
-    });
-    console.log('fui apertado')
+    if(ano == null || curso == null || turno == null || titulo == '' || content == ''){
+      alert('Todos os campos devem ser preenchidos.')
+    } else {
+      firebase.firestore().collection('recados').add({
+        ano_dest: ano,
+        curso_dest: curso,
+        turno_dest: turno,
+        remetente: setor,
+        texto: content,
+        titulo: titulo,
+        timestamp: firebase.firestore.Timestamp.fromDate(new Date()),
+      });
+      alert('Operação bem sucedida.')
+    }
   }
 
   useEffect(() => {
@@ -80,7 +84,7 @@ export default function NewCard() {
       <View style = {styles.container_row} >
         <Text style = {styles.text} >De: </Text>
         <View // Precisa tar aqui pro FlexBox funcionar direito no DropDownPicker
-          style = {{width: '90%'}}
+          style = {{width: '75%'}}
         >
           <DropDownPicker
             zIndex={4000}
@@ -98,7 +102,18 @@ export default function NewCard() {
             setItems={setSetores}
           />
         </View>
+        <TouchableOpacity
+          style = {styles.button}
+          activeOpacity = {.60}
+          onPress = {sendCard}
+        >
+          <Image
+            style = {{resizeMode: 'contain', height: 45}}
+            source = {require('../../assets/sendIcon_gray.png')}
+          />
+        </TouchableOpacity>
       </View>
+      
       <View style = {styles.container_row} >
         <Text style = {styles.text} >Para: </Text>
         <View // Precisa tar aqui pro FlexBox funcionar direito no DropDownPicker
@@ -166,48 +181,15 @@ export default function NewCard() {
         value = {titulo}
         onChangeText = {setTitulo}
         placeholder = {'Título'}
-        style = {{
-          width: '95%',
-          backgroundColor: '#eee',
-          borderRadius: 10,
-          paddingHorizontal: 10,
-          height: 50,
-          fontSize: 20 
-        }}
+        style = {styles.textInput_titulo}
       />
       <TextInput
         value = {content}
         onChangeText = {setContent}
         placeholder = {'Mensagem'}
         multiline = {true}
-        style = {{
-          marginTop: 10, 
-          width: '95%',
-          paddingHorizontal: 10,
-          fontSize: 20, 
-          textAlignVertical: 'top',
-          flex: -1,
-          minHeight: '50%'
-        }}
+        style = {styles.textInput_content}
       />
-      <View
-        style = {{
-          marginBottom: 20,
-          marginRight: 20,
-          width: '50%',
-          height: '10%',
-          backgroundColor: '#ddd'
-        }}
-      >
-        <TouchableOpacity
-          style = {{
-            width: '100%',
-            height: '100%',
-            borderWidth: 1,
-          }}
-          onPress = {sendCard}
-        />
-      </View>
       <StatusBar style="auto" />
     </View>
   );
@@ -253,5 +235,30 @@ const styles = StyleSheet.create({
     width: '95%',
     alignItems: 'center',
     justifyContent: 'space-between',
-  }
+  },
+  button: {
+    backgroundColor: '#ddd',
+    width: '15%',
+    height: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 20
+  },
+  textInput_content: {
+    marginTop: 10, 
+    width: '95%',
+    paddingHorizontal: 10,
+    fontSize: 20, 
+    textAlignVertical: 'top',
+    flex: -1,
+    minHeight: '50%'
+  },
+  textInput_titulo: {
+    width: '95%',
+    backgroundColor: '#eee',
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    height: 50,
+    fontSize: 20 
+  },
 });

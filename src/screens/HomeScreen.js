@@ -7,8 +7,6 @@ import { AuthenticatedUserContext } from '../navigation/AuthenticatedUserProvide
 import filter from 'lodash.filter'
 import Card from "../components/card";
 import Constants from 'expo-constants';
-import { NavigationContainer } from '@react-navigation/native';
-import { isUndefined } from 'lodash';
 const { height } = Dimensions.get('window');
 var user_setor = [];
 
@@ -18,10 +16,9 @@ export default function HomeScreen({ navigation }) {
   const { user } = useContext(AuthenticatedUserContext);
   const [loading, setLoading] = useState(true);
   const [recados, setRecados] = useState([]); 
-  const [pesquisa, setPesquisa] = useState('')
-  const [fullData, setFullData] = useState([])
-
-  
+  const [pesquisa, setPesquisa] = useState('');
+  const [fullData, setFullData] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
 
   const handleSignOut = async () => {
     try {
@@ -32,6 +29,7 @@ export default function HomeScreen({ navigation }) {
   };
 
   const getRecados = async () => {
+    setRefreshing(true);
     try {
 
       var user_ano;
@@ -61,8 +59,6 @@ export default function HomeScreen({ navigation }) {
           recadosList.push(doc)
       })
 
-      
-
       setFullData(recadosList.map((doc) => ({
         id: doc.id,
         titulo: doc.data().titulo,
@@ -80,6 +76,7 @@ export default function HomeScreen({ navigation }) {
     } catch (err) {
       Alert.alert("Erro ao consultar os recados!!!", err.message);
     }
+    setRefreshing(false);
   };
 
   const contem = (doc,query) => {
@@ -118,8 +115,6 @@ export default function HomeScreen({ navigation }) {
   useEffect(() => {
     getRecados()
   }, []);
-
-  var tst = []
 
   return (
     <ImageBackground
@@ -176,45 +171,37 @@ export default function HomeScreen({ navigation }) {
             />
           </View>
           : <FlatList   // Caso hajam mensagens baixadas, exibe-as em forma de lista
-            data={recados}
-            renderItem={({ item }) => (
-              <Card
-                texto={item.texto}
-                titulo={item.titulo}
-                timestamp={item.timestamp}
-                info1={item.remetente}
-                info2={'ao ' +
-                  item.ano_dest + 'º '
-                  + item.curso_dest + ' '
-                  + item.turno_dest}
-              />
-            )}
-          />
+              data={recados}
+              onRefresh={getRecados}
+              refreshing = {refreshing}
+              showsVerticalScrollIndicator = {false}
+              renderItem={({ item }) => (
+                <Card
+                  texto={item.texto}
+                  titulo={item.titulo}
+                  timestamp={item.timestamp}
+                  info1={item.remetente}
+                  info2={'ao ' +
+                    item.ano_dest + 'º '
+                    + item.curso_dest + ' '
+                    + item.turno_dest}
+                />
+              )}
+            />
         }
       </View>
       { user_setor.length != 0 // Só mostra o botão de enviar mensagem se o usuário tiver um setor.
-      ? <View /* Eu não sei porque mas quando eu coloco o TouchableOpacity aqui o estilo fica meio estranho,
-               Então eu tive que criar uma view e colocar o TouchableOpacity dentro dela                  */
-        style = {{
-          marginBottom: 20,
-          marginRight: 20,
-          width: '50%',
-          height: '10%',
-          backgroundColor: '#ddd'
-        }}
-      >
+      ? 
         <TouchableOpacity
-          style = {{
-            width: '100%',
-            height: '100%',
-            borderWidth: 1,
-          }}
+          style = {styles.button}
+          activeOpacity = {.95}
           onPress = {() => {navigation.navigate('NewCard')}}
         >
-
+          <Image
+            style = {{resizeMode: 'contain', height: '100%', width: '100%'}}
+            source = {require('../../assets/sendIcon_white.png')}
+          />
         </TouchableOpacity>
-
-      </View>
       : <View></View> }
     </ImageBackground>
   );
@@ -276,5 +263,23 @@ const styles = StyleSheet.create({
 	searchBar_input: {
 		height: '200%', // 100% o texto sai cortado.
 		width: '85%',
-	}
+  },
+  button: {
+    position: 'absolute',
+    bottom: 10,
+    right: '3%',
+    width: '14%',
+    height: '7%',
+    backgroundColor: '#2F9E41',
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 8,
+    },
+    shadowOpacity: 0.44,
+    shadowRadius: 10.32,
+    elevation: 16,
+    alignItems: 'center'
+  }
 });
