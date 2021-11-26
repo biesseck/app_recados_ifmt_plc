@@ -1,6 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { StyleSheet, Text, View, FlatList, Alert, Pressable, Image, ImageBackground, Dimensions, StatusBar, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, FlatList, Alert, Pressable, Image, ImageBackground, Dimensions, TouchableOpacity } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
+import { StatusBar } from 'expo-status-bar';
 import { Button } from '../components';
 import { firebase, auth } from '../../config/firebase';
 import { AuthenticatedUserContext } from '../navigation/AuthenticatedUserProvider';
@@ -69,10 +70,9 @@ export default function HomeScreen({ navigation }) {
         turno_dest: doc.data().turno_dest,
         texto: doc.data().texto
       })))
-      setPesquisa('')
       setLoading(false)
       setRecados(fullData)
-
+      handleSearch('')
     } catch (err) {
       Alert.alert("Erro ao consultar os recados!!!", err.message);
     }
@@ -114,6 +114,7 @@ export default function HomeScreen({ navigation }) {
   // Funcao executada quando a tela e' carregada
   useEffect(() => {
     getRecados()
+    console.log('funciona bixo')
   }, []);
 
   return (
@@ -203,6 +204,7 @@ export default function HomeScreen({ navigation }) {
           />
         </TouchableOpacity>
       : <View></View> }
+      <StatusBar style = {'auto'}/>
     </ImageBackground>
   );
 }
