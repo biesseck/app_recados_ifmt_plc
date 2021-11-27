@@ -4,7 +4,6 @@ import { View, ActivityIndicator } from 'react-native';
 import { firebase, auth } from '../../config/firebase';
 import { AuthenticatedUserContext } from './AuthenticatedUserProvider';
 import AuthStack from './AuthStack';
-import CadStack from './CadStack';
 import HomeStack from './HomeStack';
 
 export default function RootNavigator() {
