@@ -5,6 +5,7 @@ import { firebase, auth } from '../../config/firebase';
 import { AuthenticatedUserContext } from './AuthenticatedUserProvider';
 import AuthStack from './AuthStack';
 import CadStack from './CadStack';
+import HomeStack from './HomeStack';
 
 export default function RootNavigator() {
     const { user, setUser } = useContext(AuthenticatedUserContext);
@@ -35,7 +36,7 @@ export default function RootNavigator() {
   
     return (
       <NavigationContainer>
-        {user ? <CadStack/> : <AuthStack/>}
+        {user ? <HomeStack/> : <AuthStack/>}
       </NavigationContainer>
     );
   }
