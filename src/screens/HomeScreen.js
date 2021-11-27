@@ -8,6 +8,7 @@ import { AuthenticatedUserContext } from '../navigation/AuthenticatedUserProvide
 import filter from 'lodash.filter'
 import Card from "../components/card";
 import Constants from 'expo-constants';
+import CadStack from '../navigation/CadStack';
 const { height } = Dimensions.get('window');
 var user_setor = [];
 
@@ -16,7 +17,7 @@ export default function HomeScreen({ navigation }) {
 
   const { user } = useContext(AuthenticatedUserContext);
   const [loading, setLoading] = useState(true);
-  const [recados, setRecados] = useState([]); 
+  const [recados, setRecados] = useState([]);
   const [pesquisa, setPesquisa] = useState('');
   const [fullData, setFullData] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
@@ -79,22 +80,22 @@ export default function HomeScreen({ navigation }) {
     setRefreshing(false);
   };
 
-  const contem = (doc,query) => {
+  const contem = (doc, query) => {
     let i = false;
     Object.values(doc).forEach(value => {
       if (i) return true
-      if (doc.id == value){
+      if (doc.id == value) {
         return;
-      } else if (typeof value === 'string' || value instanceof String){
+      } else if (typeof value === 'string' || value instanceof String) {
         i = value.toLowerCase()
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "")
-            .includes(query)
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .includes(query)
       } else {
         i = (value.toDate().getDate() + '/'
-            + value.toDate().getMonth() + '/'
-            + value.toDate().getFullYear())
-            .includes(query)
+          + value.toDate().getMonth() + '/'
+          + value.toDate().getFullYear())
+          .includes(query)
       }
     })
     return i;
@@ -102,10 +103,10 @@ export default function HomeScreen({ navigation }) {
 
   const handleSearch = (text) => {
     let normalQuery = text.toLowerCase()
-                      .normalize("NFD")
-                      .replace(/[\u0300-\u036f]/g, "")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
     const data = filter(fullData, doc => {
-      return contem(doc,normalQuery)
+      return contem(doc, normalQuery)
     })
     setPesquisa(text)
     setRecados(data)
@@ -113,69 +114,88 @@ export default function HomeScreen({ navigation }) {
 
   // Funcao executada quando a tela e' carregada
   useEffect(() => {
+    vefUser()
     getRecados()
     console.log('funciona bixo')
   }, []);
 
-  return (
-    <ImageBackground
-      style={styles.container}
-      source={require('../../assets/background_homeScreen.png')}
-    >
-      <View style = {styles.header_container}>
-        <View style = {{flexDirection: 'row', justifyContent: 'center', height: '35%', alignItems: 'center'}}>
-          <Pressable
-            onPress = {() => handleSignOut()}
-          >
-            <Image
-              style = {styles.logo}
-              source = {require('../../assets/iflogo_white_40x53.png')}
-            />
-          </Pressable>
-          <View style = {styles.searchBar}>
-            <Image
-              style = {styles.searchIcon}
-              source = {require('../../assets/searchIcon.png')}
-            />
-            <TextInput style = {styles.searchBar_input} 
-              onChangeText = {handleSearch}
-              value = {pesquisa}
-              placeholder = 'Pesquisar'
-            />
+  const [teste, setTeste] = useState(false)
+
+  const vefUser = () => {
+    firebase.firestore().collection('users').doc(user.uid).get()
+      .then(doc => {
+        if (!doc.exists) {
+          setTeste(true)
+        } else {
+        }
+      })
+  }
+
+  if (teste == true) {
+    return (
+      <CadStack/>
+    );
+  } else{
+    return (
+      <ImageBackground
+        style={styles.container}
+        source={require('../../assets/background_homeScreen.png')}
+      >
+        <View style={styles.header_container}>
+          <View style={{ flexDirection: 'row', justifyContent: 'center', height: '35%', alignItems: 'center' }}>
             <Pressable
-              onPress = {() => handleSearch('')}
-              style = {{paddingVertical: 10 // Deixa o botão mais fácil de apertar 
-              }}
+              onPress={() => handleSignOut()}
             >
               <Image
-                style = {{marginRight: 5}}
-                source = {require('../../assets/crossIcon.png')}
+                style={styles.logo}
+                source={require('../../assets/iflogo_white_40x53.png')}
               />
             </Pressable>
+            <View style={styles.searchBar}>
+              <Image
+                style={styles.searchIcon}
+                source={require('../../assets/searchIcon.png')}
+              />
+              <TextInput style={styles.searchBar_input}
+                onChangeText={handleSearch}
+                value={pesquisa}
+                placeholder='Pesquisar'
+              />
+              <Pressable
+                onPress={() => handleSearch('')}
+                style={{
+                  paddingVertical: 10 // Deixa o botão mais fácil de apertar 
+                }}
+              >
+                <Image
+                  style={{ marginRight: 5 }}
+                  source={require('../../assets/crossIcon.png')}
+                />
+              </Pressable>
+            </View>
           </View>
         </View>
-      </View>
-			<View style = {styles.flatlist_container}>
-      { recados.length == 0   // Se nao houver mensagens, exibe uma mensagem ao usuario
-        ? <View style = {{alignItems: 'center'}}>
-            <Text style = {{fontSize: 20, color: '#FFF'}}>Nenhuma mensagem</Text>
-            <Text></Text>
-            <Button
-              onPress={() => { getRecados(); }}
-              backgroundColor='#f57c00'
-              title='Recarregar'
-              tileColor='#fff'
-              titleSize={20}
-              containerStyle={{
-                marginBottom: 20
-              }}
-            />
-          </View>
-          : <FlatList   // Caso hajam mensagens baixadas, exibe-as em forma de lista
+        <View style={styles.flatlist_container}>
+          {recados.length == 0   // Se nao houver mensagens, exibe uma mensagem ao usuario
+            ? <View style={{ alignItems: 'center' }}>
+              <Text style={{ fontSize: 20, color: '#FFF' }}>Nenhuma mensagem</Text>
+              <Text></Text>
+              <Button
+                onPress={() => { getRecados(); }}
+                backgroundColor='#f57c00'
+                title='Recarregar'
+                tileColor='#fff'
+                titleSize={20}
+                containerStyle={{
+                  marginBottom: 20
+                }}
+              />
+            </View>
+            : <FlatList   // Caso hajam mensagens baixadas, exibe-as em forma de lista
               data={recados}
               onRefresh={getRecados}
-              refreshing = {refreshing}
-              showsVerticalScrollIndicator = {false}
+              refreshing={refreshing}
+              showsVerticalScrollIndicator={false}
               renderItem={({ item }) => (
                 <Card
                   texto={item.texto}
@@ -189,24 +209,25 @@ export default function HomeScreen({ navigation }) {
                 />
               )}
             />
-        }
-      </View>
-      { user_setor.length != 0 // Só mostra o botão de enviar mensagem se o usuário tiver um setor.
-      ? 
-        <TouchableOpacity
-          style = {styles.button}
-          activeOpacity = {.95}
-          onPress = {() => {navigation.navigate('NewCard')}}
-        >
-          <Image
-            style = {{resizeMode: 'contain', height: '100%', width: '100%'}}
-            source = {require('../../assets/sendIcon_white.png')}
-          />
-        </TouchableOpacity>
-      : <View></View> }
-      <StatusBar style = {'auto'}/>
-    </ImageBackground>
-  );
+          }
+        </View>
+        {user_setor.length != 0 // Só mostra o botão de enviar mensagem se o usuário tiver um setor.
+          ?
+          <TouchableOpacity
+            style={styles.button}
+            activeOpacity={.95}
+            onPress={() => { navigation.navigate('NewCard') }}
+          >
+            <Image
+              style={{ resizeMode: 'contain', height: '100%', width: '100%' }}
+              source={require('../../assets/sendIcon_white.png')}
+            />
+          </TouchableOpacity>
+          : <View></View>}
+        <StatusBar style={'auto'} />
+      </ImageBackground>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
@@ -227,44 +248,44 @@ const styles = StyleSheet.create({
     height: '100%',
     paddingHorizontal: 12,
     flex: 1,
-	},
-  header_container: {
-  	width: '100%',
-		height: Constants.statusBarHeight + 40,
-		backgroundColor: '#2F9E41',
-		justifyContent: 'flex-end',
-		paddingBottom: 10,
-		shadowColor: "#000",
-		shadowOffset: {
-			width: 0,
-			height: 3,
-		},
-		shadowOpacity: 0.27,
-		shadowRadius: 4.65,
-		elevation: 6,
   },
-	searchBar: {
-		width: '85%',
-		height: 25,
-		borderRadius: 5,
-		backgroundColor: '#4ABD5E',
-		flexDirection: 'row',
-		alignItems: 'center',
-		justifyContent: 'space-between',
-		paddingLeft: 2,
-	},
-	logo: {
-		height: 25,
-		resizeMode: 'contain',
-		marginRight: 5,
-	},
-	searchIcon: {
-		height: 15,
-		resizeMode: 'contain',
-	},
-	searchBar_input: {
-		height: '200%', // 100% o texto sai cortado.
-		width: '85%',
+  header_container: {
+    width: '100%',
+    height: Constants.statusBarHeight + 40,
+    backgroundColor: '#2F9E41',
+    justifyContent: 'flex-end',
+    paddingBottom: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
+    elevation: 6,
+  },
+  searchBar: {
+    width: '85%',
+    height: 25,
+    borderRadius: 5,
+    backgroundColor: '#4ABD5E',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingLeft: 2,
+  },
+  logo: {
+    height: 25,
+    resizeMode: 'contain',
+    marginRight: 5,
+  },
+  searchIcon: {
+    height: 15,
+    resizeMode: 'contain',
+  },
+  searchBar_input: {
+    height: '200%', // 100% o texto sai cortado.
+    width: '85%',
   },
   button: {
     position: 'absolute',
