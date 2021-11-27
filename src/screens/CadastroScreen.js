@@ -53,6 +53,7 @@ export default function Cadastro() {
       curso: curso,
       turno: turno,
       setor: [],
+      usertype: 1,
     })
 
     vefUser()
