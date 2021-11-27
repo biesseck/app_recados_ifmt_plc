@@ -63,9 +63,9 @@ export default function HomeScreen({ navigation }) {
         })
       }else{
         snapshot.forEach(doc => {
-          if ((doc.data().remetente == user_setor[0] // só as duas posições tá bom
-            || doc.data().remetente == user_setor[1])) // nunca vi ngm com mais de dois setor no IF
+          if(user_setor.includes(doc.data().remetente)){
             recadosList.push(doc)
+          }
         })
 
       }
@@ -90,24 +90,21 @@ export default function HomeScreen({ navigation }) {
   };
 
   const contem = (doc, query) => {
-    let i = false;
-    Object.values(doc).forEach(value => {
-      if (i) return true
-      if (doc.id == value) {
-        return;
-      } else if (typeof value === 'string' || value instanceof String) {
-        i = value.toLowerCase()
-          .normalize("NFD")
-          .replace(/[\u0300-\u036f]/g, "")
-          .includes(query)
+    let arr = Object.values(doc);
+    for(let i = 0; i < arr.length; i++){
+      if (doc.id == arr[i]) {
+        // pass;
+      } else if (typeof arr[i] === 'string' || arr[i] instanceof String) {
+        if(arr[i].toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(query)){
+          return true;
+        }
       } else {
-        i = (value.toDate().getDate() + '/'
-          + value.toDate().getMonth() + '/'
-          + value.toDate().getFullYear())
-          .includes(query)
+        if((arr[i].toDate().getDate() + '/' + arr[i].toDate().getMonth() + '/' + arr[i].toDate().getFullYear()).includes(query)){
+          return true;
+        }
       }
-    })
-    return i;
+    }
+    return false;
   }
 
   const handleSearch = (text) => {
@@ -220,7 +217,7 @@ export default function HomeScreen({ navigation }) {
             />
           }
         </View>
-        {usertype = 2 // Só mostra o botão de enviar mensagem se o usuário for do tipo 2 (no fim é a mesma coisa que antes).
+        {usertype == 2 // Só mostra o botão de enviar mensagem se o usuário for do tipo 2 (no fim é a mesma coisa que antes).
           ?
           <TouchableOpacity
             style={styles.button}

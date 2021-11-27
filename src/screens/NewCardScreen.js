@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useContext, useEffect, useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, Alert } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { firebase, auth } from '../../config/firebase';
 import { AuthenticatedUserContext } from '../navigation/AuthenticatedUserProvider';
@@ -60,18 +60,36 @@ export default function NewCard({navigation}) {
 
   const sendCard = () => {
     if(ano == null || curso == null || turno == null || titulo == '' || content == ''){
-      alert('Todos os campos devem ser preenchidos.')
+      Alert.alert('ERRO','Todos os campos devem estar preenchidos')
     } else {
-      firebase.firestore().collection('recados').add({
-        ano_dest: ano,
-        curso_dest: curso,
-        turno_dest: turno,
-        remetente: setor,
-        texto: content,
-        titulo: titulo,
-        timestamp: firebase.firestore.Timestamp.fromDate(new Date()),
-      });
-      alert('Operação bem sucedida.')
+      Alert.alert(
+        "Confirmação",
+        "Você tem certeza que quer mandar esse recado?",
+        [{
+          text: "Não",
+          style: "cancel",
+          },
+          {
+            text: "Sim",
+            onPress: () => {
+              firebase.firestore().collection('recados').add({
+                ano_dest: ano,
+                curso_dest: curso,
+                turno_dest: turno,
+                remetente: setor,
+                texto: content,
+                titulo: titulo,
+                timestamp: firebase.firestore.Timestamp.fromDate(new Date()),
+              });
+              alert('Operação bem sucedida')
+            },
+            style: "default",
+            },
+        ],
+        {
+          cancelable: true,
+        }
+      ); 
     }
   }
 
