@@ -6,7 +6,7 @@ import { firebase, auth } from '../../config/firebase';
 import { AuthenticatedUserContext } from '../navigation/AuthenticatedUserProvider';
 import Constants from 'expo-constants';
 
-export default function NewCard() {
+export default function NewCard({navigation}) {
 
   const { user } = useContext(AuthenticatedUserContext);
 
