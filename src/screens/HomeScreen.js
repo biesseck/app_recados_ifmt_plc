@@ -11,6 +11,10 @@ import Constants from 'expo-constants';
 import CadStack from '../navigation/CadStack';
 const { height } = Dimensions.get('window');
 var user_setor = [];
+var usertype;
+var user_ano;
+var user_curso;
+var user_turno;
 
 
 export default function HomeScreen({ navigation }) {
@@ -33,17 +37,13 @@ export default function HomeScreen({ navigation }) {
   const getRecados = async () => {
     setRefreshing(true);
     try {
-
-      var user_ano;
-      var user_curso;
-      var user_turno;
-
       firebase.firestore().collection('users').doc(user.uid).get()
         .then(doc => {
           user_ano = doc.data().ano
           user_curso = doc.data().curso
           user_turno = doc.data().turno
           user_setor = doc.data().setor
+          usertype = doc.data().usertype
         })
 
       const recadosRef = firebase.firestore().collection('recados');
@@ -51,16 +51,25 @@ export default function HomeScreen({ navigation }) {
       const recadosList = new Array()
 
       // Filtragem dos recados por curso, ano e turma;
-      snapshot.forEach(doc => {
-        if ((doc.data().curso_dest == user_curso
-          || doc.data().curso_dest == '')
-          && (doc.data().ano_dest == user_ano
-            || doc.data().ano_dest == '')
-          && (doc.data().turno_dest == user_turno
-            || doc.data().turno_dest == ''))
-          recadosList.push(doc)
-      })
+      if(usertype == 1){
+        snapshot.forEach(doc => {
+          if ((doc.data().curso_dest == user_curso
+            || doc.data().curso_dest == '')
+            && (doc.data().ano_dest == user_ano
+              || doc.data().ano_dest == '')
+            && (doc.data().turno_dest == user_turno
+              || doc.data().turno_dest == ''))
+            recadosList.push(doc)
+        })
+      }else{
+        snapshot.forEach(doc => {
+          if ((doc.data().remetente == user_setor[0] // só as duas posições tá bom
+            || doc.data().remetente == user_setor[1])) // nunca vi ngm com mais de dois setor no IF
+            recadosList.push(doc)
+        })
 
+      }
+      
       setFullData(recadosList.map((doc) => ({
         id: doc.id,
         titulo: doc.data().titulo,
@@ -211,7 +220,7 @@ export default function HomeScreen({ navigation }) {
             />
           }
         </View>
-        {user_setor.length != 0 // Só mostra o botão de enviar mensagem se o usuário tiver um setor.
+        {usertype = 2 // Só mostra o botão de enviar mensagem se o usuário for do tipo 2 (no fim é a mesma coisa que antes).
           ?
           <TouchableOpacity
             style={styles.button}
