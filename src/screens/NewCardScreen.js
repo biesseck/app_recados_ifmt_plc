@@ -2,11 +2,11 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useContext, useEffect, useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, Alert } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
-import { firebase, auth } from '../../config/firebase';
+import { firebase} from '../../config/firebase';
 import { AuthenticatedUserContext } from '../navigation/AuthenticatedUserProvider';
 import Constants from 'expo-constants';
 
-export default function NewCard({navigation}) {
+export default function NewCardScreen() {
 
   const { user } = useContext(AuthenticatedUserContext);
 
