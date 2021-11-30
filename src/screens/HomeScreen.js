@@ -10,12 +10,13 @@ import Card from "../components/card";
 import Constants from 'expo-constants';
 import CadStack from '../navigation/CadStack';
 const { height } = Dimensions.get('window');
+
+// Variáveis do Usuário
 var user_setor = [];
-var usertype;
 var user_ano;
 var user_curso;
 var user_turno;
-
+//---------------------
 
 export default function HomeScreen({ navigation }) {
 
@@ -25,7 +26,9 @@ export default function HomeScreen({ navigation }) {
   const [pesquisa, setPesquisa] = useState('');
   const [fullData, setFullData] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
+  const [doc_user, setDoc_user] = useState(false)
 
+  //Função para deslogar
   const handleSignOut = async () => {
     try {
       await auth.signOut();
@@ -34,24 +37,17 @@ export default function HomeScreen({ navigation }) {
     }
   };
 
+  //Função para buscar recados na base
   const getRecados = async () => {
     setRefreshing(true);
     try {
-      firebase.firestore().collection('users').doc(user.uid).get()
-        .then(doc => {
-          user_ano = doc.data().ano
-          user_curso = doc.data().curso
-          user_turno = doc.data().turno
-          user_setor = doc.data().setor
-          usertype = doc.data().usertype
-        })
 
       const recadosRef = firebase.firestore().collection('recados');
       const snapshot = await recadosRef.orderBy('timestamp', 'desc').get()
       const recadosList = new Array()
 
       // Filtragem dos recados por curso, ano e turma;
-      if(usertype == 1){
+      if (user_setor.length == 0) {
         snapshot.forEach(doc => {
           if ((doc.data().curso_dest == user_curso
             || doc.data().curso_dest == '')
@@ -61,15 +57,15 @@ export default function HomeScreen({ navigation }) {
               || doc.data().turno_dest == ''))
             recadosList.push(doc)
         })
-      }else{
+      } else {
+      // Ou filtragem dos recados por setor
         snapshot.forEach(doc => {
-          if(user_setor.includes(doc.data().remetente)){
+          if (user_setor.includes(doc.data().remetente)) {
             recadosList.push(doc)
           }
         })
-
       }
-      
+
       setFullData(recadosList.map((doc) => ({
         id: doc.id,
         titulo: doc.data().titulo,
@@ -80,9 +76,11 @@ export default function HomeScreen({ navigation }) {
         turno_dest: doc.data().turno_dest,
         texto: doc.data().texto
       })))
+
       setLoading(false)
       setRecados(fullData)
       handleSearch('')
+
     } catch (err) {
       Alert.alert("Erro ao consultar os recados!!!", err.message);
     }
@@ -91,15 +89,15 @@ export default function HomeScreen({ navigation }) {
 
   const contem = (doc, query) => {
     let arr = Object.values(doc);
-    for(let i = 0; i < arr.length; i++){
+    for (let i = 0; i < arr.length; i++) {
       if (doc.id == arr[i]) {
         // pass;
       } else if (typeof arr[i] === 'string' || arr[i] instanceof String) {
-        if(arr[i].toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(query)){
+        if (arr[i].toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(query)) {
           return true;
         }
       } else {
-        if((arr[i].toDate().getDate() + '/' + arr[i].toDate().getMonth() + '/' + arr[i].toDate().getFullYear()).includes(query)){
+        if ((arr[i].toDate().getDate() + '/' + arr[i].toDate().getMonth() + '/' + arr[i].toDate().getFullYear()).includes(query)) {
           return true;
         }
       }
@@ -118,31 +116,42 @@ export default function HomeScreen({ navigation }) {
     setRecados(data)
   }
 
-  // Funcao executada quando a tela e' carregada
-  useEffect(() => {
-    vefUser()
-    getRecados()
-    console.log('funciona bixo')
-  }, []);
-
-  const [teste, setTeste] = useState(false)
-
+  //Função para verificar o usuário
   const vefUser = () => {
+
+    //Salva os Dados
+    firebase.firestore().collection('users').doc(user.uid).get()
+      .then(doc => {
+        user_ano = doc.data().ano
+        user_curso = doc.data().curso
+        user_turno = doc.data().turno
+        user_setor = doc.data().setor
+      })
+    
+    //Verifica se ele tem documento
     firebase.firestore().collection('users').doc(user.uid).get()
       .then(doc => {
         if (!doc.exists) {
-          setTeste(true)
+          setDoc_user(true)
         } else {
         }
       })
   }
 
-  if (teste == true) {
+  // Funcao executada quando a tela é carregada
+  useEffect(() => {
+    vefUser()
+    getRecados()
+    //console.log('funciona bixo')
+  }, []);
+
+  if (doc_user == true) {
     return (
-      <CadStack/>
+      <CadStack /> // Chama a tela de cadastro se ele não tiver um documento
     );
-  } else{
+  } else {
     return (
+      
       <ImageBackground
         style={styles.container}
         source={require('../../assets/background_homeScreen.png')}
@@ -217,7 +226,7 @@ export default function HomeScreen({ navigation }) {
             />
           }
         </View>
-        {usertype == 2 // Só mostra o botão de enviar mensagem se o usuário for do tipo 2 (no fim é a mesma coisa que antes).
+        {user_setor.length != 0 // Só mostra o botão de enviar mensagem se o usuário for do tipo 2 (no fim é a mesma coisa que antes).
           ?
           <TouchableOpacity
             style={styles.button}
