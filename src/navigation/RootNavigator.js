@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { View, ActivityIndicator } from 'react-native';
-import { firebase, auth } from '../../config/firebase';
+import { auth } from '../../config/firebase';
 import { AuthenticatedUserContext } from './AuthenticatedUserProvider';
 import AuthStack from './AuthStack';
 import HomeStack from './HomeStack';
@@ -11,7 +11,7 @@ export default function RootNavigator() {
     const [isLoading, setIsLoading] = useState(true);
   
     useEffect(() => {
-      // onAuthStateChanged returns an unsubscriber
+      //Validação do Usuário
       const unsubscribeAuth = auth.onAuthStateChanged(async authenticatedUser => {
         try {
           await (authenticatedUser ? setUser(authenticatedUser) : setUser(null));
@@ -20,8 +20,6 @@ export default function RootNavigator() {
           console.log(error);
         }
       });
-  
-      // unsubscribe auth listener on unmount
       return unsubscribeAuth;
     }, []);
   
@@ -32,10 +30,11 @@ export default function RootNavigator() {
         </View>
       );
     }
-  
+    
+    //Vai para a Tela Principal caso a autenticação do usuário seja válida
     return (
-      <NavigationContainer>
-        {user ? <HomeStack/> : <AuthStack/>}
+      <NavigationContainer>  
+        {user ? <HomeStack/> : <AuthStack/>} 
       </NavigationContainer>
     );
   }
