@@ -3,7 +3,7 @@ import React from 'react';
 import { useState } from 'react';
 import { StyleSheet, Text, View, Button as RNButton } from 'react-native';
 import { Button, InputField, ErrorMessage } from '../components';
-import { firebase, auth } from '../../config/firebase';
+import { auth } from '../../config/firebase';
 
 export default function SignupScreen({ navigation }) {
   const [email, setEmail] = useState('');
@@ -12,6 +12,7 @@ export default function SignupScreen({ navigation }) {
   const [rightIcon, setRightIcon] = useState('eye');
   const [signupError, setSignupError] = useState('');
 
+  //Função para esconder a senha
   const handlePasswordVisibility = () => {
     if (rightIcon === 'eye') {
       setRightIcon('eye-off');
@@ -22,6 +23,7 @@ export default function SignupScreen({ navigation }) {
     }
   };
 
+  //Função para cadastrar email
   const onHandleSignup = async () => {
     try {
       if (email !== '' && password !== '') {
@@ -34,8 +36,11 @@ export default function SignupScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
+
       <StatusBar style='dark-content' />
+
       <Text style={styles.title}>Criar Nova Conta</Text>
+
       <InputField
         inputStyle={{
           fontSize: 20
@@ -53,6 +58,7 @@ export default function SignupScreen({ navigation }) {
         value={email}
         onChangeText={text => setEmail(text)}
       />
+
       <InputField
         inputStyle={{
           fontSize: 20
@@ -72,7 +78,9 @@ export default function SignupScreen({ navigation }) {
         onChangeText={text => setPassword(text)}
         handlePasswordVisibility={handlePasswordVisibility}
       />
+
       {signupError ? <ErrorMessage error={signupError} visible={true} /> : null}
+
       <Button
         onPress={onHandleSignup}
         backgroundColor='#f57c00'
@@ -83,11 +91,13 @@ export default function SignupScreen({ navigation }) {
           marginBottom: 24
         }}
       />
+
       <RNButton
         onPress={() => navigation.navigate('Login')}
         title='Login'
         color='#000'
       />
+      
     </View>
   );
 }
