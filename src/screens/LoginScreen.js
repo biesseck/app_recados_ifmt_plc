@@ -14,6 +14,7 @@ export default function LoginScreen({ navigation }) {
   const [rightIcon, setRightIcon] = useState('eye');
   const [loginError, setLoginError] = useState('');
   
+  //Função esconder senha
   const handlePasswordVisibility = () => {
     if (rightIcon === 'eye') {
       setRightIcon('eye-off');
@@ -24,6 +25,7 @@ export default function LoginScreen({ navigation }) {
     }
   };
 
+  //Função para logar com email
   const onLogin = async () => {
     try {
       if (email !== '' && password !== '') {
@@ -34,49 +36,43 @@ export default function LoginScreen({ navigation }) {
     }
   };
 
-  // ESSE BLOCO SÓ FUNCIONA ONLINE (F)
-  //const LoginGoogle = async () => {
-  //  const provider = new firebase.auth.GoogleAuthProvider();
-  // const result = await auth.signInWithPopup(provider);
-  //}
+  /*
+  ESSE BLOCO SÓ FUNCIONA ONLINE F
+  const LoginGoogle = async () => {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    const result = await auth.signInWithPopup(provider);
+  }
+  */
 
+  //Função para buscar usuário no firebase
   function isUserEqual(googleUser, firebaseUser) {
     if (firebaseUser) {
       var providerData = firebaseUser.providerData;
       for (var i = 0; i < providerData.length; i++) {
         if (providerData[i].providerId === firebase.auth.GoogleAuthProvider.PROVIDER_ID &&
           providerData[i].uid === googleUser.getBasicProfile().getId()) {
-          // We don't need to reauth the Firebase connection.
           return true;
         }
       }
     }
     return false;
   }
-  // CONST NÃO FUNCIONOU TESTe COM FUNÇÕES
+  
+  //Função Login com as credenciais do Google
   function onSignIn(googleUser) {
     console.log('Google Auth Response', googleUser);
-    // We need to register an Observer on Firebase Auth to make sure auth is initialized.
     var unsubscribe = firebase.auth().onAuthStateChanged((firebaseUser) => {
       unsubscribe();
-      // Check if we are already signed-in Firebase with the correct user.
       if (!isUserEqual(googleUser, firebaseUser)) {
-        // Build Firebase credential with the Google ID token.
         var credential = firebase.auth.GoogleAuthProvider.credential(
           googleUser.idToken,
           googleUser.accessToken,
         );
-
-        // Sign in with credential from the Google user.
         firebase.auth().signInWithCredential(credential).catch((error) => {
-          // Handle Errors here.
           var errorCode = error.code;
           var errorMessage = error.message;
-          // The email of the user's account used.
           var email = error.email;
-          // The firebase.auth.AuthCredential type that was used.
           var credential = error.credential;
-          // ...
         });
       } else {
         console.log('User already signed-in Firebase.');
@@ -84,16 +80,16 @@ export default function LoginScreen({ navigation }) {
     });
   }
 
+  //Login com o Google Android 
   const signInWithGoogleAsync = async () => {
     try {
       const result = await Google.logInAsync({
         androidClientId: '512511721451-t98qi7pceqkjdeqoakcbj7bgl8e9qj3b.apps.googleusercontent.com',
-        //iosClientId: YOUR_CLIENT_ID_HERE,
+        //iosClientId: YOUR_CLIENT_ID_HERE, //IOS Client ID
         scopes: ['profile', 'email'],
       });
-
       if (result.type === 'success') {
-        onSignIn(result)
+        onSignIn(result) //Chama a função com as credenciais do login android
         return result.accessToken;
       } else {
         return { cancelled: true };
@@ -105,8 +101,11 @@ export default function LoginScreen({ navigation }) {
   
   return (
     <View style={styles.container}>
+
       <StatusBar style='dark-content' />
+
       <Text style={styles.title}>Tela de Login</Text>
+
       <InputField
         inputStyle={{
           fontSize: 20
@@ -124,6 +123,7 @@ export default function LoginScreen({ navigation }) {
         value={email}
         onChangeText={text => setEmail(text)}
       />
+
       <InputField
         inputStyle={{
           fontSize: 20
@@ -143,7 +143,9 @@ export default function LoginScreen({ navigation }) {
         onChangeText={text => setPassword(text)}
         handlePasswordVisibility={handlePasswordVisibility}
       />
+
       {loginError ? <ErrorMessage error={loginError} visible={true} /> : null}
+
       <Button
         onPress={onLogin}
         backgroundColor='#f57c00'
@@ -154,6 +156,7 @@ export default function LoginScreen({ navigation }) {
           marginBottom: 24
         }}
       />
+
       <SocialButton
         buttonTitle="Entrar com Google"
         btnType="google"
@@ -161,11 +164,13 @@ export default function LoginScreen({ navigation }) {
         backgroundColor="#f5e7ea"
         onPress={signInWithGoogleAsync}
       />
+
       <RNButton
         onPress={() => navigation.navigate('Signup')}
         title='Criar conta'
         color='#000'
       />
+      
     </View>
   );
 }
