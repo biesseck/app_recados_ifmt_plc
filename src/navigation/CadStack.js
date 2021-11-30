@@ -4,9 +4,8 @@ import CadastroScreen from '../screens/CadastroScreen';
 
 const Stack = createStackNavigator();
 
-export default function AuthStack() {
+export default function CadStack() {
   return (
-    //<Stack.Navigator headerMode='none'>
     <Stack.Navigator screenOptions={{headerShown: false}}>
       <Stack.Screen name='Cadastro' component={CadastroScreen} /> 
     </Stack.Navigator>
