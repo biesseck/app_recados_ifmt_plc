@@ -1,15 +1,18 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { useState, useContext, useEffect } from 'react';
-import { StyleSheet, Text, View, Button as RNButton } from 'react-native';
+import { useState, useContext} from 'react';
+import { StyleSheet, Text, View} from 'react-native';
 import { Button} from '../components';
 import { AuthenticatedUserContext } from '../navigation/AuthenticatedUserProvider';
-import { firebase, auth } from '../../config/firebase';
+import { firebase} from '../../config/firebase';
 import HomeStack from '../navigation/HomeStack';
 import DropDownPicker from 'react-native-dropdown-picker';
 
-export default function Cadastro() {
+export default function CadastroScreen() {
+
   const { user } = useContext(AuthenticatedUserContext);
+  const [doc_user, setDoc_user] = useState(false)
+
   const [open, setOpen] = useState(false);
   const [open1, setOpen1] = useState(false);
   const [open2, setOpen2] = useState(false);
@@ -34,45 +37,29 @@ export default function Cadastro() {
     { label: 'Vespertino', value: 'Vespertino' },
   ]);
 
-  const [essasparada, setEssaparada] = useState(false)
-
-  const vefUser = () => {
-    firebase.firestore().collection('users').doc(user.uid).get()
-      .then(doc => {
-        if (!doc.exists) {
-        } else {
-          setEssaparada(true)
-        }
-      })
-  }
-
   const CadTurma = () => {
-
     firebase.firestore().collection('users').doc(user.uid).set({
       ano: ano,
       curso: curso,
       turno: turno,
       setor: [],
-      usertype: 1,
     })
-
-    vefUser()
-
+      setDoc_user(true)
   }
 
-  useEffect(() => {
-    vefUser()
-  }, []);
-
-  if (essasparada == true) {
+  if (doc_user == true) {
     return (
       <HomeStack />
     );
+
   } else {
     return (
       <View style={styles.container}>
+
         <StatusBar style='dark-content' />
+
         <Text style={styles.title}> Informe sua Turma </Text>
+
         <View>
           <DropDownPicker
             open={open}
@@ -103,7 +90,6 @@ export default function Cadastro() {
             setOpen={setOpen2}
             setValue={setTurno}
             setItems={setTurnos}
-
           />
         </View>
 
@@ -117,6 +103,7 @@ export default function Cadastro() {
             marginTop: 85
           }}
         />
+
       </View>
     );
   }
