@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import { StyleSheet, Text, View, FlatList, Alert, Pressable, Image, ImageBackground, Dimensions, TouchableOpacity } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
-import { Button, ErrorMessage } from '../components';
+import { Button } from '../components';
 import { firebase, auth } from '../../config/firebase';
 import { AuthenticatedUserContext } from '../navigation/AuthenticatedUserProvider';
 import filter from 'lodash.filter'
@@ -10,20 +10,21 @@ import Card from "../components/card";
 import Constants from 'expo-constants';
 import CadStack from '../navigation/CadStack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import { NavigationContainer } from '@react-navigation/native';
-
-
+console.disableYellowBox = true;
 const { height } = Dimensions.get('window');
+const Drawer = createDrawerNavigator();
 
 // Variáveis do Usuário
-var user_setor = [];
-var user_ano;
-var user_curso;
-var user_turno;
+const usuario = {
+  ano: '',
+  curso: '',
+  turno: '',
+  setor: [],
+}
 //---------------------
 
+//HomeScreen
 export function HomeScreen({ navigation }) {
-
   const { user } = useContext(AuthenticatedUserContext);
   const [loading, setLoading] = useState(true);
   const [recados, setRecados] = useState([]);
@@ -51,20 +52,20 @@ export function HomeScreen({ navigation }) {
       const recadosList = new Array()
 
       // Filtragem dos recados por curso, ano e turma;
-      if (user_setor.length == 0) {
+      if (usuario.setor.length == 0) {
         snapshot.forEach(doc => {
-          if ((doc.data().curso_dest == user_curso
+          if ((doc.data().curso_dest == usuario.curso
             || doc.data().curso_dest == '')
-            && (doc.data().ano_dest == user_ano
+            && (doc.data().ano_dest == usuario.ano
               || doc.data().ano_dest == '')
-            && (doc.data().turno_dest == user_turno
+            && (doc.data().turno_dest == usuario.turno
               || doc.data().turno_dest == ''))
             recadosList.push(doc)
         })
       } else {
-      // Ou filtragem dos recados por setor
+        // Ou filtragem dos recados por setor
         snapshot.forEach(doc => {
-          if (user_setor.includes(doc.data().remetente)) {
+          if (usuario.setor.includes(doc.data().remetente)) {
             recadosList.push(doc)
           }
         })
@@ -126,12 +127,12 @@ export function HomeScreen({ navigation }) {
     //Salva os Dados
     firebase.firestore().collection('users').doc(user.uid).get()
       .then(doc => {
-        user_ano = doc.data().ano
-        user_curso = doc.data().curso
-        user_turno = doc.data().turno
-        user_setor = doc.data().setor
+        usuario.ano = doc.data().ano
+        usuario.curso = doc.data().curso
+        usuario.turno = doc.data().turno
+        usuario.setor = doc.data().setor
       })
-    
+
     //Verifica se ele tem documento
     firebase.firestore().collection('users').doc(user.uid).get()
       .then(doc => {
@@ -155,16 +156,16 @@ export function HomeScreen({ navigation }) {
     );
   } else {
     return (
-      
+
       <ImageBackground
         style={styles.container}
         source={require('../../assets/background_homeScreen.png')}
       >
         <View style={styles.header_container}>
           <View style={{ flexDirection: 'row', justifyContent: 'center', height: '35%', alignItems: 'center' }}>
-            
+
             <Pressable
-              onPress={() => handleSignOut()}
+              onPress={() => navigation.openDrawer()}
             >
               <Image
                 style={styles.logo}
@@ -231,7 +232,7 @@ export function HomeScreen({ navigation }) {
             />
           }
         </View>
-        {user_setor.length != 0 // Só mostra o botão de enviar mensagem se o usuário for do tipo 2 (no fim é a mesma coisa que antes).
+        {usuario.setor.length != 0 // Só mostra o botão de enviar mensagem se o usuário tiver setor
           ?
           <TouchableOpacity
             style={styles.button}
@@ -250,48 +251,71 @@ export function HomeScreen({ navigation }) {
   }
 }
 
-export function ConfigScreen({ navigation }) {
-  return (
-    <View style={styles.container2}>
-      <Text>Teste</Text>
-    </View>
-  )
-}
-
-export function ProfileScreen({ navigation }) {
-  return (
-    <View style={styles.container2}>
-      <Text> Deseja sair ?</Text>
-      <View style={{ flexDirection: 'row', height: '20%', width: '90%', paddingLeft: 600, marginTop: 20 }}>
-
-        <TouchableOpacity
-          onPress={() => {
-            try {
-              auth.signOut();
-            } catch (error) {
-              console.log(error);
-            }
+//Tela do Perfil
+export function PerfilScreen() {
+  const { user } = useContext(AuthenticatedUserContext);
+  console.log(user)
+  if (usuario.setor.length != 0) {
+    return (
+      <View style={styles.container2}>
+        <Image
+          style={{
+            width: 200,
+            height: 200,
           }}
-          style={styles.sair}
-        > Sim </TouchableOpacity>
-
-        <TouchableOpacity style={styles.nsair}
-          onPress={() => navigation.goBack()}>
-          Não </TouchableOpacity>
+          source={{
+            uri: user.photoURL
+          }}
+        />
+        <Text>Usuário: {user.displayName}</Text>
+        <Text>Email: {user.email}</Text>
+        <Text>Setor: {usuario.setor[0]} {usuario.setor[1]} </Text>
       </View>
+    )
+  } else {
+    return (
+      <View style={styles.container2}>
+        <Image
+          style={{
+            width: 200,
+            height: 200,
+          }}
+          source={{
+            uri: user.photoURL
+          }}
+        />
+        <Text>Usuário: {user.displayName}</Text>
+        <Text>Email: {user.email}</Text>
+        <Text>Turma: {usuario.ano}° {usuario.curso} {usuario.turno} </Text>
+      </View>
+    )
+  }
+}
+
+//Telinha de LogOut
+export function LogoutScreen() {
+  return (
+    <View style={styles.container2}>
+      <Button
+        title={'LogOut'}
+        onPress={() => {
+          return (
+            auth.signOut()
+          );
+        }}
+      />
     </View>
   )
 }
 
-const Drawer = createDrawerNavigator()
-
+//Tela Lateral
 export default function TelaLateral() {
   return (
-      <Drawer.Navigator initialRouteName="Home">
-        <Drawer.Screen name="Início" component={HomeScreen} />
-        <Drawer.Screen name="Configurações" component={ConfigScreen} />
-        <Drawer.Screen name="Sair" component={ProfileScreen} />
-      </Drawer.Navigator>
+    <Drawer.Navigator initialRouteName="Home">
+      <Drawer.Screen name="Recados" component={HomeScreen} />
+      <Drawer.Screen name="Perfil" component={PerfilScreen} />
+      <Drawer.Screen name="Sair" component={LogoutScreen} />
+    </Drawer.Navigator>
   );
 }
 
