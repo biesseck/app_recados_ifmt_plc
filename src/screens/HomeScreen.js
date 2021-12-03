@@ -11,8 +11,6 @@ import Constants from 'expo-constants';
 import CadStack from '../navigation/CadStack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
-import { parse } from 'dotenv';
-
 
 
 const { height } = Dimensions.get('window');
@@ -164,6 +162,7 @@ export function HomeScreen({ navigation }) {
       >
         <View style={styles.header_container}>
           <View style={{ flexDirection: 'row', justifyContent: 'center', height: '35%', alignItems: 'center' }}>
+            
             <Pressable
               onPress={() => handleSignOut()}
             >
@@ -237,7 +236,7 @@ export function HomeScreen({ navigation }) {
           <TouchableOpacity
             style={styles.button}
             activeOpacity={.95}
-            onPress={() => { navigation.navigate('NewCard') }}
+            onPress={() => { navigation.navigate('NewCardScreen') }}
           >
             <Image
               style={{ resizeMode: 'contain', height: '100%', width: '100%' }}
@@ -258,7 +257,6 @@ export function ConfigScreen({ navigation }) {
     </View>
   )
 }
-
 
 export function ProfileScreen({ navigation }) {
   return (
@@ -289,13 +287,11 @@ const Drawer = createDrawerNavigator()
 
 export default function TelaLateral() {
   return (
-    <NavigationContainer independent={true}>
       <Drawer.Navigator initialRouteName="Home">
         <Drawer.Screen name="Início" component={HomeScreen} />
         <Drawer.Screen name="Configurações" component={ConfigScreen} />
         <Drawer.Screen name="Sair" component={ProfileScreen} />
       </Drawer.Navigator>
-    </NavigationContainer>
   );
 }
 
