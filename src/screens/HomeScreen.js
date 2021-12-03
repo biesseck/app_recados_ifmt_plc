@@ -326,7 +326,6 @@ const styles = StyleSheet.create({
     height: height + 500,
     alignItems: 'flex-end',
   },
-
   container2: {
     flex: 1,
     backgroundColor: '#fff',
