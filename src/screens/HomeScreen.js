@@ -2,13 +2,19 @@ import React, { useContext, useState, useEffect } from 'react';
 import { StyleSheet, Text, View, FlatList, Alert, Pressable, Image, ImageBackground, Dimensions, TouchableOpacity } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
-import { Button } from '../components';
+import { Button, ErrorMessage } from '../components';
 import { firebase, auth } from '../../config/firebase';
 import { AuthenticatedUserContext } from '../navigation/AuthenticatedUserProvider';
 import filter from 'lodash.filter'
 import Card from "../components/card";
 import Constants from 'expo-constants';
 import CadStack from '../navigation/CadStack';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import { NavigationContainer } from '@react-navigation/native';
+import { parse } from 'dotenv';
+
+
+
 const { height } = Dimensions.get('window');
 
 // Variáveis do Usuário
@@ -18,7 +24,7 @@ var user_curso;
 var user_turno;
 //---------------------
 
-export default function HomeScreen({ navigation }) {
+export function HomeScreen({ navigation }) {
 
   const { user } = useContext(AuthenticatedUserContext);
   const [loading, setLoading] = useState(true);
@@ -245,6 +251,54 @@ export default function HomeScreen({ navigation }) {
   }
 }
 
+export function ConfigScreen({ navigation }) {
+  return (
+    <View style={styles.container2}>
+      <Text>Teste</Text>
+    </View>
+  )
+}
+
+
+export function ProfileScreen({ navigation }) {
+  return (
+    <View style={styles.container2}>
+      <Text> Deseja sair ?</Text>
+      <View style={{ flexDirection: 'row', height: '20%', width: '90%', paddingLeft: 600, marginTop: 20 }}>
+
+        <TouchableOpacity
+          onPress={() => {
+            try {
+              auth.signOut();
+            } catch (error) {
+              console.log(error);
+            }
+          }}
+          style={styles.sair}
+        > Sim </TouchableOpacity>
+
+        <TouchableOpacity style={styles.nsair}
+          onPress={() => navigation.goBack()}>
+          Não </TouchableOpacity>
+      </View>
+    </View>
+  )
+}
+
+const Drawer = createDrawerNavigator()
+
+export default function TelaLateral() {
+  return (
+    <NavigationContainer independent={true}>
+      <Drawer.Navigator initialRouteName="Home">
+        <Drawer.Screen name="Início" component={HomeScreen} />
+        <Drawer.Screen name="Configurações" component={ConfigScreen} />
+        <Drawer.Screen name="Sair" component={ProfileScreen} />
+      </Drawer.Navigator>
+    </NavigationContainer>
+  );
+}
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -252,6 +306,14 @@ const styles = StyleSheet.create({
     height: height + 500,
     alignItems: 'flex-end',
   },
+
+  container2: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -319,5 +381,25 @@ const styles = StyleSheet.create({
     shadowRadius: 10.32,
     elevation: 16,
     alignItems: 'center'
-  }
+  },
+
+  sair: {
+    borderWidth: 1,
+    color: 'green',
+    height: '20%',
+    width: '10%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 20,
+    backgroundColor: '#F0FFF0',
+  },
+  nsair: {
+    borderWidth: 1,
+    color: 'red',
+    height: '20%',
+    width: '10%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FFF5EE',
+  },
 });
