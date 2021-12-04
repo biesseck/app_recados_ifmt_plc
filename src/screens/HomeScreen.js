@@ -46,46 +46,51 @@ export function HomeScreen({ navigation }) {
   const getRecados = async () => {
     setRefreshing(true);
     try {
-
-      const recadosRef = firebase.firestore().collection('recados');
-      const snapshot = await recadosRef.orderBy('timestamp', 'desc').get()
-      const recadosList = new Array()
-
-      // Filtragem dos recados por curso, ano e turma;
-      if (usuario.setor.length == 0) {
-        snapshot.forEach(doc => {
-          if ((doc.data().curso_dest == usuario.curso
-            || doc.data().curso_dest == '')
-            && (doc.data().ano_dest == usuario.ano
-              || doc.data().ano_dest == '')
-            && (doc.data().turno_dest == usuario.turno
-              || doc.data().turno_dest == ''))
-            recadosList.push(doc)
-        })
-      } else {
-        // Ou filtragem dos recados por setor
-        snapshot.forEach(doc => {
-          if (usuario.setor.includes(doc.data().remetente)) {
-            recadosList.push(doc)
+      const recadosRecebidos = firebase
+        .firestore()
+        .collection("recados")
+        .orderBy("timestamp", "desc")
+        .onSnapshot(
+          snapshot => {
+            const recadosList = snapshot.docs.reduce((result, doc) => {
+              if (usuario.setor.length == 0) {
+                  if ((doc.data().curso_dest == usuario.curso || doc.data().curso_dest == "") && (doc.data().ano_dest == usuario.ano || doc.data().ano_dest == "") && (doc.data().turno_dest == usuario.turno || doc.data().turno_dest == "")){
+                    result.push({
+                      id: doc.id,
+                      titulo: doc.data().titulo,
+                      timestamp: doc.data().timestamp,
+                      remetente: doc.data().remetente,
+                      curso_dest: doc.data().curso_dest,
+                      ano_dest: doc.data().ano_dest,
+                      turno_dest: doc.data().turno_dest,
+                      texto: doc.data().texto,
+                    });
+                  }
+              } else {
+                  if (usuario.setor.includes(doc.data().remetente)) {
+                    result.push({
+                      id: doc.id,
+                      titulo: doc.data().titulo,
+                      timestamp: doc.data().timestamp,
+                      remetente: doc.data().remetente,
+                      curso_dest: doc.data().curso_dest,
+                      ano_dest: doc.data().ano_dest,
+                      turno_dest: doc.data().turno_dest,
+                      texto: doc.data().texto,
+                    });
+                  }
+              }
+              return result
+            }, []);
+            setFullData(recadosList);
+            setRecados(recadosList);
+          },
+          () => {
+            setError(true);
           }
-        })
-      }
-
-      setFullData(recadosList.map((doc) => ({
-        id: doc.id,
-        titulo: doc.data().titulo,
-        timestamp: doc.data().timestamp,
-        remetente: doc.data().remetente,
-        curso_dest: doc.data().curso_dest,
-        ano_dest: doc.data().ano_dest,
-        turno_dest: doc.data().turno_dest,
-        texto: doc.data().texto
-      })))
-
-      setLoading(false)
-      setRecados(fullData)
-      handleSearch('')
-
+        );
+      setLoading(false);
+      // return() => recadosRecebidos();
     } catch (err) {
       Alert.alert("Erro ao consultar os recados!!!", err.message);
     }
@@ -156,7 +161,6 @@ export function HomeScreen({ navigation }) {
     );
   } else {
     return (
-
       <ImageBackground
         style={styles.container}
         source={require('../../assets/background_homeScreen.png')}
