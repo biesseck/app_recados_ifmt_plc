@@ -9,7 +9,7 @@ import filter from 'lodash.filter'
 import Card from "../components/card";
 import Constants from 'expo-constants';
 import CadStack from '../navigation/CadStack';
-import { createDrawerNavigator } from '@react-navigation/drawer';
+import { createDrawerNavigator, DrawerContentScrollView, DrawerItem, DrawerItemList } from '@react-navigation/drawer';
 console.disableYellowBox = true;
 const { height } = Dimensions.get('window');
 const Drawer = createDrawerNavigator();
@@ -152,7 +152,6 @@ export function HomeScreen({ navigation }) {
   useEffect(() => {
     vefUser()
     getRecados()
-    //console.log('funciona bixo')
   }, []);
 
   if (doc_user == true) {
@@ -296,29 +295,36 @@ export function PerfilScreen() {
   }
 }
 
-//Telinha de LogOut
-export function LogoutScreen() {
+//Componente lateral
+function DrawerComponent(props) {
   return (
-    <View style={styles.container2}>
-      <Button
-        title={'LogOut'}
+    <DrawerContentScrollView {...props} style={{ backgroundColor: "#2F9E41" }}>
+      <DrawerItemList {...props} drawerInactiveTintColor="#fff" />
+      <DrawerItem
+        label="Sair"
+        inactiveTintColor="#cd191e"
         onPress={() => {
-          return (
-            auth.signOut()
-          );
+          return auth.signOut();
         }}
       />
-    </View>
-  )
+    </DrawerContentScrollView>
+  );
 }
 
-//Tela Lateral
-export default function TelaLateral() {
+//Drawer navigator
+export default function DrawerNavigator() {
   return (
-    <Drawer.Navigator initialRouteName="Home">
-      <Drawer.Screen name="Recados" component={HomeScreen} />
+    <Drawer.Navigator
+      initialRouteName="Recados"
+      drawerContent={DrawerComponent}
+      screenOptions={{
+        drawerInactiveTintColor: "#fff",
+        drawerActiveTintColor: "#fff",
+        drawerActiveBackgroundColor: "#4ABD5E",
+      }}
+    >
+      <Drawer.Screen name="Recados" component={HomeScreen} options={{ headerShown: false }} />
       <Drawer.Screen name="Perfil" component={PerfilScreen} />
-      <Drawer.Screen name="Sair" component={LogoutScreen} />
     </Drawer.Navigator>
   );
 }
@@ -336,7 +342,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -404,25 +409,5 @@ const styles = StyleSheet.create({
     shadowRadius: 10.32,
     elevation: 16,
     alignItems: 'center'
-  },
-
-  sair: {
-    borderWidth: 1,
-    color: 'green',
-    height: '20%',
-    width: '10%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 20,
-    backgroundColor: '#F0FFF0',
-  },
-  nsair: {
-    borderWidth: 1,
-    color: 'red',
-    height: '20%',
-    width: '10%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#FFF5EE',
   },
 });
