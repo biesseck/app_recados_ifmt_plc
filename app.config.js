@@ -2,11 +2,11 @@ import 'dotenv/config';
 
 export default {
   expo: {
-    name: "app_recados_ifmt_plc",
-    slug: "app_recados_ifmt_plc",
+    name: "NotIFy",
+    slug: "NotIFy",
     version: "1.0.0",
     orientation: "portrait",
-    icon: "./assets/icon.png",
+    icon: "./assets/icon_notify.png",
     splash: {
       image: "./assets/splash_ifLogo.png",
       resizeMode: "contain",
@@ -23,15 +23,16 @@ export default {
     },
     android: {
       adaptiveIcon: {
-        foregroundImage: "./assets/adaptive-icon.png",
+        foregroundImage: "./assets/adaptive-icon_notify.png",
         backgroundColor: "#FFFFFF"
-      }
+      },
+      package: "notify.plc.ifmt.edu.br",
     },
     androidNavigationBar: {
      backgroundColor: '#000000' // Pensei em colocar o verde do IF mas fica muito chamativo
    },
     web: {
-      favicon: "./assets/favicon.png"
+      favicon: "./assets/favicon_notify.png"
     },
     extra: {
       apiKey: "AIzaSyDYIesmw4FstEKJzwIHmMcY-tKGiLe-qcw",
