@@ -84,7 +84,7 @@ export default function LoginScreen({ navigation }) {
   const signInWithGoogleAsync = async () => {
     try {
       const result = await Google.logInAsync({
-        androidClientId: '512511721451-t98qi7pceqkjdeqoakcbj7bgl8e9qj3b.apps.googleusercontent.com',
+        androidClientId: '512511721451-95egtn8i15h272fiu6b9ur9hp7r4lrm3.apps.googleusercontent.com',
         //iosClientId: YOUR_CLIENT_ID_HERE, //IOS Client ID
         scopes: ['profile', 'email'],
       });
