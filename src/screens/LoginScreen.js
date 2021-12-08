@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { useState } from 'react';
-import { StyleSheet, Text, View, Button as RNButton } from 'react-native';
+import { StyleSheet, Text, View, Button as RNButton, Image } from 'react-native';
 import { Button, InputField, ErrorMessage } from '../components';
 import { firebase, auth } from '../../config/firebase';
 import SocialButton from '../components/SocialButton';
@@ -153,8 +153,18 @@ export default function LoginScreen({ navigation }) {
         tileColor='#fff'
         titleSize={24}
         containerStyle={{
-          marginBottom: 24
+          marginBottom: 0
         }}
+      />
+
+      <RNButton
+        onPress={() => navigation.navigate('Signup')}
+        title='Criar conta'
+        color='#000'
+      />
+
+      <View
+        style={{margin: 10}}
       />
 
       <SocialButton
@@ -163,12 +173,6 @@ export default function LoginScreen({ navigation }) {
         color="#de4d41"
         backgroundColor="#f5e7ea"
         onPress={signInWithGoogleAsync}
-      />
-
-      <RNButton
-        onPress={() => navigation.navigate('Signup')}
-        title='Criar conta'
-        color='#000'
       />
       
     </View>
