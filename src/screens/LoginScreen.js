@@ -106,6 +106,26 @@ export default function LoginScreen({ navigation }) {
 
       <Text style={styles.title}>Tela de Login</Text>
 
+      <View style={styles.view_logos}>
+        <Image
+          style={{
+            width: 58,
+            height: 76,
+          }}
+          source={require('../../assets/iflogo_white_40x53.png')}
+        />
+
+        <Image
+          style={{
+            width: 90,
+            height: 90,
+            marginTop: 5,
+            marginLeft: 50,
+          }}
+          source={require('../../assets/icon_notify.png')}
+        />
+      </View>
+
       <InputField
         inputStyle={{
           fontSize: 20
@@ -192,5 +212,11 @@ const styles = StyleSheet.create({
     color: '#fff',
     alignSelf: 'center',
     paddingBottom: 24
-  }
+  },
+  view_logos: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
+  },
 });
